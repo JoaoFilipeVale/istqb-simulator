@@ -1,0 +1,59 @@
+{
+    "welcome": {
+        "title": "Welcome to the exam simulator",
+        "subtitle": "ISTQB® - Certified Tester Foundation Level",
+        "instructions_title": "Instructions:",
+        "instruction_1": "The exam consists of <span class=\"font-bold\">40 multiple-choice questions</span>.",
+        "instruction_2": "You have <span class=\"font-bold\">60 minutes</span> to complete the exam.",
+        "instruction_3": "The passing score is <span class=\"font-bold\">65%</span> (26 correct answers).",
+        "instruction_4": "You can navigate freely between questions and change your answers before submitting.",
+        "instruction_5": "<span class=\"font-bold\">Realistic Simulation:</span> Questions follow the official ISTQB distribution matrix.",
+        "start_button": "Start exam",
+        "footer": {
+            "developed_by": "Developed by João Vale",
+            "opensource_link": "Open Source Project for educational purposes",
+            "based_on": "Based on the ISTQB® CTFL v4.0 Sample Exam.",
+            "copyright": "Questions and Content © International Software Testing Qualifications Board (ISTQB®). All rights reserved.",
+            "disclaimer": "This simulator is NOT officially affiliated with ISTQB®."
+        }
+    },
+    "exam": {
+        "title": "ISTQB Exam - Foundation Level",
+        "question_counter": "Question {current} of {total}",
+        "finish_button": "Finish exam",
+        "sidebar_title": "Navigation",
+        "prev_button": "Previous",
+        "next_button": "Next",
+        "finish_exam_button": "Finish Exam",
+        "confirm_modal": {
+            "title": "Finish exam?",
+            "message": "Are you sure you want to submit the exam now? Time is not up yet. Once submitted, you cannot change your answers.",
+            "cancel": "Cancel",
+            "confirm": "Finish and Submit"
+        }
+    },
+    "results": {
+        "passed": "PASSED",
+        "failed": "FAILED",
+        "score_summary": "You answered <span class=\"font-bold\">{answered}</span> out of <span class=\"font-bold\">{total}</span> questions and got <span class=\"font-bold\">{score}</span> correct ({percentage}%)",
+        "restart_button": "Retake exam",
+        "chapter_analysis_title": "Chapter analysis",
+        "chapter": "Chapter {number}",
+        "hits": "{correct}/{total} correct",
+        "review_title": "Exam review",
+        "correct_badge": "Correct",
+        "incorrect_badge": "Incorrect",
+        "your_answer": "Your answer",
+        "correct_answer": "Correct answer",
+        "no_answer": "No answer",
+        "explanation": "Explanation:"
+    },
+    "chapters": {
+        "1": "Fundamentals of Testing",
+        "2": "Testing Throughout the Software Development Lifecycle",
+        "3": "Static Testing",
+        "4": "Test Techniques",
+        "5": "Test Management",
+        "6": "Tool Support for Testing"
+    }
+}

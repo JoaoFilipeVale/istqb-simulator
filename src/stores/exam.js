@@ -1,37 +1,33 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { questions, generateWeightedExam } from '../data/questions'
+import { questions as questionsPt } from '../data/questions_pt.js'
+import { questions as questionsEn } from '../data/questions_en.js'
+import { useLanguageStore } from './language'
 
 export const useExamStore = defineStore('exam', () => {
+    const languageStore = useLanguageStore()
+
     // --- State ---
-    /** @type {import('vue').Ref<'welcome' | 'active' | 'finished'>} */
     const status = ref('welcome')
-
-    /** @type {import('vue').Ref<number>} Current question index (0-based) */
     const currentQuestionIndex = ref(0)
-
-    /** @type {import('vue').Ref<Record<number, string|string[]>>} User answers map { questionId: answer } */
     const userAnswers = ref({})
-
-    /** @type {import('vue').Ref<number>} Time remaining in seconds (starts at 3600s = 60m) */
     const timeLeft = ref(3600)
-
-    /** @type {import('vue').Ref<Array>} Array of questions for the current exam session */
     const shuffledQuestions = ref([])
-
     let timerInterval = null
+
+    // --- Computed Source ---
+    // Select the correct array of questions based on current locale
+    const availableQuestions = computed(() => {
+        return languageStore.currentLocale === 'en' ? questionsEn : questionsPt
+    })
 
     // --- Getters ---
     const currentQuestion = computed(() => shuffledQuestions.value[currentQuestionIndex.value])
-    const totalQuestions = computed(() => shuffledQuestions.value.length || questions.length)
+    const totalQuestions = computed(() => shuffledQuestions.value.length || 40) // Default to 40 if not yet generated
 
     const isLastQuestion = computed(() => currentQuestionIndex.value === shuffledQuestions.value.length - 1)
     const isFirstQuestion = computed(() => currentQuestionIndex.value === 0)
 
-    /**
-     * Calculates the total score based on user answers.
-     * Handles both single choice and multiple choice questions.
-     */
     const score = computed(() => {
         let correctCount = 0
         shuffledQuestions.value.forEach(q => {
@@ -39,16 +35,12 @@ export const useExamStore = defineStore('exam', () => {
             if (!userAnswer) return
 
             if (Array.isArray(q.correctAnswer)) {
-                // Multiple choice: Check if arrays are identical (ignoring order if needed, but usually exact match)
-                // Prompt says: "check if the user selected ALL correct options".
-                // Assuming exact match of the set of selected options.
                 if (Array.isArray(userAnswer) &&
                     userAnswer.length === q.correctAnswer.length &&
                     userAnswer.every(val => q.correctAnswer.includes(val))) {
                     correctCount++
                 }
             } else {
-                // Single choice
                 if (userAnswer === q.correctAnswer) {
                     correctCount++
                 }
@@ -57,32 +49,82 @@ export const useExamStore = defineStore('exam', () => {
         return correctCount
     })
 
-    /**
-     * Determines if the user passed the exam.
-     * Pass criteria: 65% (26 out of 40 questions).
-     */
     const passed = computed(() => score.value >= 26)
 
     // --- Actions ---
 
     /**
-     * Starts a new exam session.
-     * Resets state, generates a new weighted set of questions, and starts the timer.
+     * Internal helper to generate weighted exam from the CURRENT language source.
+     * Takes the 100 questions and picks 40 based on distribution.
      */
+    function generateWeightedExam() {
+        const sourceFn = availableQuestions.value
+        // Use default empty array if source is undefined (e.g. during hot reload or init issues)
+        const source = sourceFn || []
+
+        const distribution = {
+            1: 8, 2: 6, 3: 4, 4: 11, 5: 9, 6: 2
+        }
+
+        const questionsByChapter = {}
+        source.forEach(q => {
+            if (!questionsByChapter[q.chapter]) {
+                questionsByChapter[q.chapter] = []
+            }
+            questionsByChapter[q.chapter].push(q)
+        })
+
+        function shuffle(array) {
+            const shuffled = [...array]
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1))
+                    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+            }
+            return shuffled
+        }
+
+        const selectedQuestions = []
+        Object.entries(distribution).forEach(([chapter, count]) => {
+            const chapterNumber = parseInt(chapter)
+            const available = questionsByChapter[chapterNumber] || []
+            const shuffled = shuffle(available)
+            // If we don't have enough questions (e.g. while building EN file), take what we have
+            const selected = shuffled.slice(0, count)
+            selectedQuestions.push(...selected)
+        })
+
+        return shuffle(selectedQuestions)
+    }
+
+    // NEW: Action to refresh the CURRENT exam questions when language changes
+    // This is tricky: If we just regenerate, we lose the "shuffled order" corresponding to the previous language.
+    // Ideally, we should find the SAME questions (by ID) in the new language array and preserve order.
+    function swapLanguage() {
+        if (status.value !== 'active' && status.value !== 'finished') return
+
+        const newSource = availableQuestions.value
+        const currentIds = shuffledQuestions.value.map(q => q.id)
+
+        // Re-map the current shuffled questions to the new language objects
+        // This ensures the user stays on "Question 5" which is effectively the same question ID
+        const newShuffled = currentIds.map(id => {
+            return newSource.find(q => q.id === id)
+        }).filter(Boolean) // Remove undefined if sync is bad
+
+        if (newShuffled.length === shuffledQuestions.value.length) {
+            shuffledQuestions.value = newShuffled
+        }
+    }
+
     function startExam() {
         status.value = 'active'
         currentQuestionIndex.value = 0
         userAnswers.value = {}
         timeLeft.value = 3600
-        // Use weighted exam generation following ISTQB v4.0 distribution
         shuffledQuestions.value = generateWeightedExam()
         startTimer()
     }
 
-    /**
-     * Starts the countdown timer.
-     * Automatically finishes the exam when time reaches 0.
-     */
     function startTimer() {
         if (timerInterval) clearInterval(timerInterval)
         timerInterval = setInterval(() => {
@@ -98,11 +140,6 @@ export const useExamStore = defineStore('exam', () => {
         if (timerInterval) clearInterval(timerInterval)
     }
 
-    /**
-     * Records a user's answer for a specific question.
-     * @param {number} questionId 
-     * @param {string|string[]} answer 
-     */
     function submitAnswer(questionId, answer) {
         userAnswers.value[questionId] = answer
     }
@@ -119,29 +156,17 @@ export const useExamStore = defineStore('exam', () => {
         }
     }
 
-    /**
-     * Jumps directly to a specific question index.
-     * Used for sidebar navigation.
-     * @param {number} index 
-     */
     function jumpToQuestion(index) {
         if (index >= 0 && index < shuffledQuestions.value.length) {
             currentQuestionIndex.value = index
         }
     }
 
-    /**
-     * Finishes the exam session and stops the timer.
-     * Transitions state to 'finished' to show results.
-     */
     function finishExam() {
         stopTimer()
         status.value = 'finished'
     }
 
-    /**
-     * Resets the exam to the welcome screen state.
-     */
     function resetExam() {
         stopTimer()
         status.value = 'welcome'
@@ -168,6 +193,7 @@ export const useExamStore = defineStore('exam', () => {
         prevQuestion,
         jumpToQuestion,
         finishExam,
-        resetExam
+        resetExam,
+        swapLanguage // Export this so we can watch locale changes
     }
 })

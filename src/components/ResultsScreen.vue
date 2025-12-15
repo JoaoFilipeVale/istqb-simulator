@@ -31,45 +31,16 @@ function isCorrect(question) {
   return userAnswer === question.correctAnswer
 }
 
-function getUserAnswerText(question) {
-  const ans = store.userAnswers[question.id]
-  if (!ans) return 'Sem resposta'
-  
-  if (Array.isArray(ans)) {
-    return ans.map(id => {
-      const opt = question.options.find(o => o.id === id)
-      return opt ? `${id.toUpperCase()}) ${opt.text}` : id
-    }).join(', ')
-  }
-  
-  const opt = question.options.find(o => o.id === ans)
-  return opt ? `${ans.toUpperCase()}) ${opt.text}` : ans
-}
-
-function getCorrectAnswerText(question) {
-  const ans = question.correctAnswer
-  if (Array.isArray(ans)) {
-    return ans.map(id => {
-      const opt = question.options.find(o => o.id === id)
-      return opt ? `${id.toUpperCase()}) ${opt.text}` : id
-    }).join(', ')
-  }
-  
-  const opt = question.options.find(o => o.id === ans)
-  return opt ? `${ans.toUpperCase()}) ${opt.text}` : ans
-}
-
 // Helper to map chapter numbers to their official ISTQB v4.0 titles
+// Using i18n global instance would be ideal if outside setup, but here we can just key off the number
+// AND we are inside script setup, so we can use composer? Actually `getChapterName` is used in computed.
+// Let's rely on the template to translate OR use useI18n inside script.
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+
 function getChapterName(num) {
-  const names = {
-    1: 'Fundamentos',
-    2: 'Testes no Ciclo de Vida',
-    3: 'Testes Estáticos',
-    4: 'Técnicas de Teste',
-    5: 'Gestão de Testes',
-    6: 'Ferramentas de Teste'
-  }
-  return names[num] || `Capítulo ${num}`
+  // Use the 'chapters' key from our i18n files
+  return t(`chapters.${num}`)
 }
 
 /**
@@ -105,6 +76,34 @@ const chapterStats = computed(() => {
     }))
     .filter(chapter => chapter.total > 0) // Only show chapters with questions
 })
+
+function getUserAnswerText(question) {
+  const ans = store.userAnswers[question.id]
+  if (!ans) return t('results.no_answer')
+  
+  if (Array.isArray(ans)) {
+    return ans.map(id => {
+      const opt = question.options.find(o => o.id === id)
+      return opt ? `${id.toUpperCase()}) ${opt.text}` : id
+    }).join(', ')
+  }
+  
+  const opt = question.options.find(o => o.id === ans)
+  return opt ? `${ans.toUpperCase()}) ${opt.text}` : ans
+}
+
+function getCorrectAnswerText(question) {
+  const ans = question.correctAnswer
+  if (Array.isArray(ans)) {
+    return ans.map(id => {
+      const opt = question.options.find(o => o.id === id)
+      return opt ? `${id.toUpperCase()}) ${opt.text}` : id
+    }).join(', ')
+  }
+  
+  const opt = question.options.find(o => o.id === ans)
+  return opt ? `${ans.toUpperCase()}) ${opt.text}` : ans
+}
 </script>
 
 <template>
@@ -121,10 +120,9 @@ const chapterStats = computed(() => {
           </div>
           
           <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-2" data-testid="result-status">
-            {{ store.passed ? 'APROVADO' : 'REPROVADO' }}
+            {{ store.passed ? t('results.passed') : t('results.failed') }}
           </h2>
-          <p class="text-slate-600 dark:text-gray-300 text-lg mb-6" data-testid="score-summary">
-            Respondeu a <span class="font-bold text-slate-900 dark:text-white">{{ answeredCount }}</span> questões de <span class="font-bold text-slate-900 dark:text-white">{{ store.totalQuestions }}</span> e acertou <span class="font-bold text-slate-900 dark:text-white">{{ store.score }}</span> questões ({{ percentage }}% de acerto)
+          <p class="text-slate-600 dark:text-gray-300 text-lg mb-6" data-testid="score-summary" v-html="t('results.score_summary', { answered: answeredCount, total: store.totalQuestions, score: store.score, percentage: percentage })">
           </p>
           
           <button 
@@ -133,7 +131,7 @@ const chapterStats = computed(() => {
             class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors shadow-md"
           >
             <RotateCcw class="w-5 h-5 mr-2" />
-            Repetir Exame
+            {{ t('results.restart_button') }}
           </button>
         </div>
       </div>
@@ -142,7 +140,7 @@ const chapterStats = computed(() => {
       <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8 p-8 transition-colors duration-300" data-testid="chapter-analysis">
         <div class="flex items-center gap-3 mb-6">
           <BookOpen class="w-6 h-6 text-blue-600 dark:text-blue-400" />
-          <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Análise por Capítulo</h3>
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ t('results.chapter_analysis_title') }}</h3>
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -155,7 +153,7 @@ const chapterStats = computed(() => {
               : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20'"
           >
             <div class="flex items-center justify-between mb-2">
-              <span class="font-bold text-slate-700 dark:text-gray-200">Capítulo {{ chapter.number }}</span>
+              <span class="font-bold text-slate-700 dark:text-gray-200">{{ t('results.chapter', { number: chapter.number }) }}</span>
               <span 
                 class="text-sm font-bold px-2 py-1 rounded"
                 :class="chapter.percentage >= 65 
@@ -167,7 +165,7 @@ const chapterStats = computed(() => {
             </div>
             <p class="text-sm font-medium text-slate-600 dark:text-gray-400 mb-2">{{ chapter.name }}</p>
             <p class="text-sm text-slate-500 dark:text-gray-500">
-              <span class="font-bold text-slate-700 dark:text-gray-300">{{ chapter.correct }}/{{ chapter.total }}</span> acertos
+              <span class="font-bold text-slate-700 dark:text-gray-300">{{ t('results.hits', { correct: chapter.correct, total: chapter.total }) }}</span>
             </p>
           </div>
         </div>
@@ -175,7 +173,7 @@ const chapterStats = computed(() => {
 
       <!-- Review List -->
       <div class="space-y-6">
-        <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-4">Revisão do Exame</h3>
+        <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-4">{{ t('results.review_title') }}</h3>
         
         <div 
           v-for="(question, index) in store.shuffledQuestions" 
@@ -193,7 +191,7 @@ const chapterStats = computed(() => {
                 class="px-3 py-1 rounded-full text-sm font-bold shrink-0"
                 :class="isCorrect(question) ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'"
               >
-                {{ isCorrect(question) ? 'Correto' : 'Incorreto' }}
+                {{ isCorrect(question) ? t('results.correct_badge') : t('results.incorrect_badge') }}
               </span>
             </div>
 
@@ -202,14 +200,14 @@ const chapterStats = computed(() => {
                 <span class="block text-xs font-bold uppercase tracking-wider mb-1" 
                   :class="isCorrect(question) ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
                 >
-                  Sua Resposta
+                  {{ t('results.your_answer') }}
                 </span>
                 <span class="font-medium text-slate-800 dark:text-gray-200">{{ getUserAnswerText(question) }}</span>
               </div>
               
               <div class="p-3 bg-green-50 dark:bg-green-900/10 rounded-lg border border-green-200 dark:border-green-800">
                 <span class="block text-xs font-bold text-green-800 dark:text-green-300 uppercase tracking-wider mb-1">
-                  Resposta Correta
+                  {{ t('results.correct_answer') }}
                 </span>
                 <span class="font-medium text-slate-800 dark:text-gray-200">{{ getCorrectAnswerText(question) }}</span>
               </div>
@@ -217,7 +215,7 @@ const chapterStats = computed(() => {
 
             <div v-if="question.explanation" class="mt-4 pt-4 border-t border-slate-100 dark:border-gray-700">
               <p class="text-sm text-slate-600 dark:text-gray-300">
-                <span class="font-bold text-slate-700 dark:text-gray-200">Explicação:</span> {{ question.explanation }}
+                <span class="font-bold text-slate-700 dark:text-gray-200">{{ t('results.explanation') }}</span> {{ question.explanation }}
               </p>
             </div>
           </div>

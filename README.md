@@ -19,11 +19,12 @@ The goal of this project is to provide a realistic, accessible, and free environ
 Built with **Vue 3**, **Vite**, and **Tailwind CSS**, it features a responsive design, real-time timer, and detailed performance analytics.
 
 **Key Features:**
+*   **Bilingual Support:** Full support for **Portuguese (PT)** and **English (EN)**, with instant language switching.
 *   **Realistic Exam Mode:** 40 questions selected randomly based on the official ISTQB® v4.0 distribution matrix.
 *   **Performance Analytics:** Detailed breakdown of scores per chapter (e.g., Chapter 1: Fundamentals of Testing).
 *   **Instant Feedback:** Explanations for every question to aid learning.
 *   **Dark/Light Mode:** Toggle between themes for a comfortable reading experience.
-*   **Responsive Design:** Optimized for desktop, tablet, and mobile devices.
+*   **Responsive Design:** Optimized for desktop (with collapsible sidebar), tablet, and mobile devices.
 
 ---
 

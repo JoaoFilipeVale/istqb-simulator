@@ -1,0 +1,59 @@
+{
+    "welcome": {
+        "title": "Bem-vindo ao simulador de exame",
+        "subtitle": "ISTQB® - Certified Tester Foundation Level",
+        "instructions_title": "Instruções:",
+        "instruction_1": "O exame consiste em <span class=\"font-bold\">40 perguntas</span> de escolha múltipla.",
+        "instruction_2": "Tem <span class=\"font-bold\">60 minutos</span> para completar o exame.",
+        "instruction_3": "A pontuação de aprovação é de <span class=\"font-bold\">65%</span> (26 respostas corretas).",
+        "instruction_4": "Pode navegar livremente entre as perguntas e alterar as suas respostas antes de submeter.",
+        "instruction_5": "<span class=\"font-bold\">Simulação Realista:</span> As perguntas seguem a matriz de distribuição oficial do ISTQB.",
+        "start_button": "Iniciar Exame",
+        "footer": {
+            "developed_by": "Desenvolvido por João Vale",
+            "opensource_link": "Projeto Open Source desenvolvido para fins educativos",
+            "based_on": "Baseado na Prova-Modelo de Exame ISTQB® CTFL v4.0.",
+            "copyright": "Perguntas e Conteúdo © International Software Testing Qualifications Board (ISTQB®). Todos os direitos reservados.",
+            "disclaimer": "Este simulador não é afiliado oficialmente ao ISTQB®."
+        }
+    },
+    "exam": {
+        "title": "Exame ISTQB - Foundation Level",
+        "question_counter": "Questão {current} de {total}",
+        "finish_button": "Terminar exame",
+        "sidebar_title": "Navegação",
+        "prev_button": "Anterior",
+        "next_button": "Seguinte",
+        "finish_exam_button": "Terminar exame",
+        "confirm_modal": {
+            "title": "Terminar o exame?",
+            "message": "Tem a certeza que pretende submeter o exame agora? O tempo ainda não terminou. Uma vez submetido, não poderá alterar as suas respostas.",
+            "cancel": "Cancelar",
+            "confirm": "Terminar e Submeter"
+        }
+    },
+    "results": {
+        "passed": "APROVADO",
+        "failed": "REPROVADO",
+        "score_summary": "Respondeu a <span class=\"font-bold\">{answered}</span> questões de <span class=\"font-bold\">{total}</span> e acertou <span class=\"font-bold\">{score}</span> questões ({percentage}% de acerto)",
+        "restart_button": "Repetir exame",
+        "chapter_analysis_title": "Análise por capítulo",
+        "chapter": "Capítulo {number}",
+        "hits": "{correct}/{total} acertos",
+        "review_title": "Revisão do exame",
+        "correct_badge": "Correto",
+        "incorrect_badge": "Incorreto",
+        "your_answer": "Sua resposta",
+        "correct_answer": "Resposta correta",
+        "no_answer": "Sem resposta",
+        "explanation": "Explicação:"
+    },
+    "chapters": {
+        "1": "Fundamentos do Teste",
+        "2": "Testes no Ciclo de Vida de Desenvolvimento de Software",
+        "3": "Testes Estáticos",
+        "4": "Técnicas de Teste",
+        "5": "Gestão de Testes",
+        "6": "Ferramentas de Teste"
+    }
+}
