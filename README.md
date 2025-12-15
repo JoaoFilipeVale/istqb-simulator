@@ -22,6 +22,7 @@ Built with **Vue 3**, **Vite**, and **Tailwind CSS**, it features a responsive d
 *   **Realistic Exam Mode:** 40 questions selected randomly based on the official ISTQB® v4.0 distribution matrix.
 *   **Performance Analytics:** Detailed breakdown of scores per chapter (e.g., Chapter 1: Fundamentals of Testing).
 *   **Instant Feedback:** Explanations for every question to aid learning.
+*   **Dark/Light Mode:** Toggle between themes for a comfortable reading experience.
 *   **Responsive Design:** Optimized for desktop, tablet, and mobile devices.
 
 ---
@@ -122,7 +123,7 @@ This project is configured for easy deployment to **GitHub Pages**.
     Ensure the `base` property matches your repository name:
     ```javascript
     export default defineConfig({
-      base: '/ISTQB_project/', // Replace with your repository name
+      base: command === 'serve' ? '/' : '/istqb-simulator/', // Replace with your repository name
       // ...
     })
     ```

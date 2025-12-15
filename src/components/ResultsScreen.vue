@@ -108,29 +108,29 @@ const chapterStats = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-slate-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
     <div class="max-w-4xl mx-auto">
       <!-- Score Card -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8 transition-colors duration-300">
         <div class="p-8 text-center">
-          <div class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6"
-            :class="store.passed ? 'bg-green-100' : 'bg-red-100'"
+          <div class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 transition-colors duration-300"
+            :class="store.passed ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'"
           >
-            <CheckCircle v-if="store.passed" class="w-12 h-12 text-green-600" />
-            <XCircle v-else class="w-12 h-12 text-red-600" />
+            <CheckCircle v-if="store.passed" class="w-12 h-12 text-green-600 dark:text-green-400" />
+            <XCircle v-else class="w-12 h-12 text-red-600 dark:text-red-400" />
           </div>
           
-          <h2 class="text-3xl font-bold text-slate-900 mb-2" data-testid="result-status">
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-2" data-testid="result-status">
             {{ store.passed ? 'APROVADO' : 'REPROVADO' }}
           </h2>
-          <p class="text-slate-600 text-lg mb-6" data-testid="score-summary">
-            Respondeu a <span class="font-bold text-slate-900">{{ answeredCount }}</span> questões de <span class="font-bold text-slate-900">{{ store.totalQuestions }}</span> e acertou <span class="font-bold text-slate-900">{{ store.score }}</span> questões ({{ percentage }}% de acerto)
+          <p class="text-slate-600 dark:text-gray-300 text-lg mb-6" data-testid="score-summary">
+            Respondeu a <span class="font-bold text-slate-900 dark:text-white">{{ answeredCount }}</span> questões de <span class="font-bold text-slate-900 dark:text-white">{{ store.totalQuestions }}</span> e acertou <span class="font-bold text-slate-900 dark:text-white">{{ store.score }}</span> questões ({{ percentage }}% de acerto)
           </p>
           
           <button 
             @click="store.resetExam"
             data-testid="restart-btn"
-            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+            class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors shadow-md"
           >
             <RotateCcw class="w-5 h-5 mr-2" />
             Repetir Exame
@@ -139,35 +139,35 @@ const chapterStats = computed(() => {
       </div>
 
       <!-- Chapter Performance Analysis -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 p-8" data-testid="chapter-analysis">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8 p-8 transition-colors duration-300" data-testid="chapter-analysis">
         <div class="flex items-center gap-3 mb-6">
-          <BookOpen class="w-6 h-6 text-blue-600" />
-          <h3 class="text-2xl font-bold text-slate-900">Análise por Capítulo</h3>
+          <BookOpen class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Análise por Capítulo</h3>
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div 
             v-for="chapter in chapterStats" 
             :key="chapter.number"
-            class="border rounded-lg p-4 transition-all"
+            class="border rounded-lg p-4 transition-all duration-300"
             :class="chapter.percentage >= 65 
-              ? 'border-green-200 bg-green-50' 
-              : 'border-red-200 bg-red-50'"
+              ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20' 
+              : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20'"
           >
             <div class="flex items-center justify-between mb-2">
-              <span class="font-bold text-slate-700">Capítulo {{ chapter.number }}</span>
+              <span class="font-bold text-slate-700 dark:text-gray-200">Capítulo {{ chapter.number }}</span>
               <span 
                 class="text-sm font-bold px-2 py-1 rounded"
                 :class="chapter.percentage >= 65 
-                  ? 'bg-green-100 text-green-700' 
-                  : 'bg-red-100 text-red-700'"
+                  ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' 
+                  : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'"
               >
                 {{ chapter.percentage }}%
               </span>
             </div>
-            <p class="text-sm font-medium text-slate-600 mb-2">{{ chapter.name }}</p>
-            <p class="text-sm text-slate-500">
-              <span class="font-bold text-slate-700">{{ chapter.correct }}/{{ chapter.total }}</span> acertos
+            <p class="text-sm font-medium text-slate-600 dark:text-gray-400 mb-2">{{ chapter.name }}</p>
+            <p class="text-sm text-slate-500 dark:text-gray-500">
+              <span class="font-bold text-slate-700 dark:text-gray-300">{{ chapter.correct }}/{{ chapter.total }}</span> acertos
             </p>
           </div>
         </div>
@@ -175,49 +175,49 @@ const chapterStats = computed(() => {
 
       <!-- Review List -->
       <div class="space-y-6">
-        <h3 class="text-xl font-bold text-slate-800 mb-4">Revisão do Exame</h3>
+        <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-4">Revisão do Exame</h3>
         
         <div 
           v-for="(question, index) in store.shuffledQuestions" 
           :key="question.id"
-          class="bg-white rounded-xl shadow-sm border overflow-hidden"
-          :class="isCorrect(question) ? 'border-green-200' : 'border-red-200'"
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border overflow-hidden transition-colors duration-300"
+          :class="isCorrect(question) ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800'"
         >
           <div class="p-6">
             <div class="flex items-start justify-between mb-4">
-              <h4 class="text-lg font-medium text-slate-900 pr-4">
-                <span class="text-slate-400 mr-2">{{ index + 1 }}.</span>
+              <h4 class="text-lg font-medium text-slate-900 dark:text-white pr-4">
+                <span class="text-slate-400 dark:text-gray-500 mr-2">{{ index + 1 }}.</span>
                 <span v-html="question.text"></span>
               </h4>
               <span 
                 class="px-3 py-1 rounded-full text-sm font-bold shrink-0"
-                :class="isCorrect(question) ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+                :class="isCorrect(question) ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'"
               >
                 {{ isCorrect(question) ? 'Correto' : 'Incorreto' }}
               </span>
             </div>
 
             <div class="grid md:grid-cols-2 gap-4 mb-4 text-sm">
-              <div class="p-3 rounded-lg" :class="isCorrect(question) ? 'bg-green-50' : 'bg-red-50'">
+              <div class="p-3 rounded-lg" :class="isCorrect(question) ? 'bg-green-50 dark:bg-green-900/10' : 'bg-red-50 dark:bg-red-900/10'">
                 <span class="block text-xs font-bold uppercase tracking-wider mb-1" 
-                  :class="isCorrect(question) ? 'text-green-600' : 'text-red-600'"
+                  :class="isCorrect(question) ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
                 >
                   Sua Resposta
                 </span>
-                <span class="font-medium text-slate-800">{{ getUserAnswerText(question) }}</span>
+                <span class="font-medium text-slate-800 dark:text-gray-200">{{ getUserAnswerText(question) }}</span>
               </div>
               
-              <div class="p-3 bg-green-50 rounded-lg border border-green-200">
-                <span class="block text-xs font-bold text-green-800 uppercase tracking-wider mb-1">
+              <div class="p-3 bg-green-50 dark:bg-green-900/10 rounded-lg border border-green-200 dark:border-green-800">
+                <span class="block text-xs font-bold text-green-800 dark:text-green-300 uppercase tracking-wider mb-1">
                   Resposta Correta
                 </span>
-                <span class="font-medium text-slate-800">{{ getCorrectAnswerText(question) }}</span>
+                <span class="font-medium text-slate-800 dark:text-gray-200">{{ getCorrectAnswerText(question) }}</span>
               </div>
             </div>
 
-            <div v-if="question.explanation" class="mt-4 pt-4 border-t border-slate-100">
-              <p class="text-sm text-slate-600">
-                <span class="font-bold text-slate-700">Explicação:</span> {{ question.explanation }}
+            <div v-if="question.explanation" class="mt-4 pt-4 border-t border-slate-100 dark:border-gray-700">
+              <p class="text-sm text-slate-600 dark:text-gray-300">
+                <span class="font-bold text-slate-700 dark:text-gray-200">Explicação:</span> {{ question.explanation }}
               </p>
             </div>
           </div>

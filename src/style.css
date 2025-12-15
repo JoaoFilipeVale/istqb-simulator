@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        @apply h-full;
+    }
+
+    body {
+        @apply h-full bg-slate-50 text-slate-900 transition-colors duration-300;
+    }
+
+    /* Force dark mode styles on HTML and Body when 'dark' class is present on HTML */
+    html.dark,
+    html.dark body {
+        @apply bg-gray-900 text-gray-100;
+    }
+}
