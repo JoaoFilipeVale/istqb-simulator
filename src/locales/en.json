@@ -28,6 +28,8 @@
         "confirm_modal": {
             "title": "Finish exam?",
             "message": "Are you sure you want to submit the exam now? Time is not up yet. Once submitted, you cannot change your answers.",
+            "summary": "You have answered <span class=\"font-bold\">{answered}</span> out of <span class=\"font-bold\">{total}</span> questions.",
+            "warning": "You still have <span class=\"font-bold text-red-600 dark:text-red-400\">{remaining}</span> unanswered questions.",
             "cancel": "Cancel",
             "confirm": "Finish and Submit"
         }
@@ -36,6 +38,7 @@
         "passed": "PASSED",
         "failed": "FAILED",
         "score_summary": "You answered <span class=\"font-bold\">{answered}</span> out of <span class=\"font-bold\">{total}</span> questions and got <span class=\"font-bold\">{score}</span> correct ({percentage}%)",
+        "question_number": "Question {number}",
         "restart_button": "Retake exam",
         "chapter_analysis_title": "Chapter analysis",
         "chapter": "Chapter {number}",

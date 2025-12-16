@@ -28,16 +28,21 @@ watch(() => languageStore.currentLocale, () => {
     <!-- Header for Toggles -->
     <header 
       v-if="store.status !== 'active'"
-      class="w-full flex justify-end items-center p-4 gap-2 shrink-0 z-50"
+      class="w-full shrink-0 z-50 content-center sticky top-0 bg-slate-50/80 dark:bg-gray-900/80 backdrop-blur-sm transition-colors duration-300"
     >
-      <LanguageToggle />
-      <ThemeToggle />
+      <div 
+        class="flex justify-end items-center gap-2 transition-all duration-300"
+        :class="store.status === 'finished' ? 'max-w-4xl mx-auto w-full px-4 py-4 sm:px-6 lg:px-8 xl:max-w-full xl:px-4' : 'w-full p-4'"
+      >
+        <LanguageToggle />
+        <ThemeToggle />
+      </div>
     </header>
     
     <!-- Main Content -->
     <main 
-      class="flex-grow flex flex-col p-4 w-full mx-auto transition-all duration-300"
-      :class="store.status === 'active' ? 'max-w-full p-0' : 'max-w-7xl items-center justify-center'"
+      class="flex-grow flex flex-col w-full mx-auto transition-all duration-300"
+      :class="store.status === 'active' ? 'max-w-full' : 'p-0 sm:px-4 max-w-7xl items-center justify-center'"
     >
       <transition name="fade" mode="out-in">
         <WelcomeScreen v-if="store.status === 'welcome'" />

@@ -62,3 +62,6 @@ cypress/screenshots/
 # Misc
 *.seed
 *.pid.lock
+
+# Local Scripts
+test_distribution.mjs

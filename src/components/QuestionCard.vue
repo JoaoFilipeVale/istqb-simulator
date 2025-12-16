@@ -44,7 +44,7 @@ function isSelected(optionId) {
 </script>
 
 <template>
-  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+  <div class="bg-white p-4 sm:p-6 rounded-none sm:rounded-xl shadow-none sm:shadow-sm border-0 sm:border border-slate-200">
     <div class="mb-6">
       <h3 class="text-lg font-medium text-slate-900 leading-relaxed" v-html="question.text" data-testid="question-text"></h3>
       <p v-if="isMultiple" class="text-sm text-blue-600 font-medium mt-2 bg-blue-50 inline-block px-3 py-1 rounded-full">

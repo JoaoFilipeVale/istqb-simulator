@@ -8,7 +8,7 @@
         "instruction_3": "A pontuação de aprovação é de <span class=\"font-bold\">65%</span> (26 respostas corretas).",
         "instruction_4": "Pode navegar livremente entre as perguntas e alterar as suas respostas antes de submeter.",
         "instruction_5": "<span class=\"font-bold\">Simulação Realista:</span> As perguntas seguem a matriz de distribuição oficial do ISTQB.",
-        "start_button": "Iniciar Exame",
+        "start_button": "Iniciar exame",
         "footer": {
             "developed_by": "Desenvolvido por João Vale",
             "opensource_link": "Projeto Open Source desenvolvido para fins educativos",
@@ -28,6 +28,8 @@
         "confirm_modal": {
             "title": "Terminar o exame?",
             "message": "Tem a certeza que pretende submeter o exame agora? O tempo ainda não terminou. Uma vez submetido, não poderá alterar as suas respostas.",
+            "summary": "Respondeu a <span class=\"font-bold\">{answered}</span> de <span class=\"font-bold\">{total}</span> perguntas.",
+            "warning": "Ainda tem <span class=\"font-bold text-red-600 dark:text-red-400\">{remaining}</span> perguntas por responder.",
             "cancel": "Cancelar",
             "confirm": "Terminar e Submeter"
         }
@@ -36,6 +38,7 @@
         "passed": "APROVADO",
         "failed": "REPROVADO",
         "score_summary": "Respondeu a <span class=\"font-bold\">{answered}</span> questões de <span class=\"font-bold\">{total}</span> e acertou <span class=\"font-bold\">{score}</span> questões ({percentage}% de acerto)",
+        "question_number": "Questão {number}",
         "restart_button": "Repetir exame",
         "chapter_analysis_title": "Análise por capítulo",
         "chapter": "Capítulo {number}",

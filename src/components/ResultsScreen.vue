@@ -1,7 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useExamStore } from '../stores/exam'
-import { CheckCircle, XCircle, RotateCcw, BookOpen } from 'lucide-vue-next'
+import { CheckCircle, XCircle, RotateCcw, BookOpen, ChevronDown, ChevronUp } from 'lucide-vue-next'
 
 const store = useExamStore()
 
@@ -42,6 +42,43 @@ function getChapterName(num) {
   // Use the 'chapters' key from our i18n files
   return t(`chapters.${num}`)
 }
+
+// Collapsible State
+/** 
+ * Controls the visibility of the "Chapter Analysis" card.
+ * Default: false (collapsed) to reduce initial visual noise.
+ */
+const isChapterAnalysisOpen = ref(false)
+
+/** 
+ * Set of question IDs that are currently expanded.
+ * Incorrect questions are added automatically on mount.
+ */
+const expandedQuestions = ref(new Set())
+
+// Toggle Functions
+/** Toggles the Chapter Analysis card visibility */
+const toggleChapterAnalysis = () => {
+  isChapterAnalysisOpen.value = !isChapterAnalysisOpen.value
+}
+
+const toggleQuestion = (id) => {
+  if (expandedQuestions.value.has(id)) {
+    expandedQuestions.value.delete(id)
+  } else {
+    expandedQuestions.value.add(id)
+  }
+}
+
+// Initialize expanded state
+onMounted(() => {
+  store.shuffledQuestions.forEach(q => {
+    // Auto-expand incorrect answers for immediate review
+    if (!isCorrect(q)) {
+      expandedQuestions.value.add(q.id)
+    }
+  })
+})
 
 /**
  * Computes performance statistics per chapter.
@@ -107,7 +144,7 @@ function getCorrectAnswerText(question) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+  <div class="min-h-screen bg-slate-50 dark:bg-gray-900 pt-0 pb-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
     <div class="max-w-4xl mx-auto">
       <!-- Score Card -->
       <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8 transition-colors duration-300">
@@ -137,36 +174,44 @@ function getCorrectAnswerText(question) {
       </div>
 
       <!-- Chapter Performance Analysis -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8 p-8 transition-colors duration-300" data-testid="chapter-analysis">
-        <div class="flex items-center gap-3 mb-6">
-          <BookOpen class="w-6 h-6 text-blue-600 dark:text-blue-400" />
-          <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ t('results.chapter_analysis_title') }}</h3>
-        </div>
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8 transition-colors duration-300" data-testid="chapter-analysis">
+        <button 
+          @click="toggleChapterAnalysis"
+          class="w-full flex items-center justify-between p-6 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          <div class="flex items-center gap-3">
+            <BookOpen class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ t('results.chapter_analysis_title') }}</h3>
+          </div>
+          <component :is="isChapterAnalysisOpen ? ChevronUp : ChevronDown" class="w-6 h-6 text-slate-400" />
+        </button>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div 
-            v-for="chapter in chapterStats" 
-            :key="chapter.number"
-            class="border rounded-lg p-4 transition-all duration-300"
-            :class="chapter.percentage >= 65 
-              ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20' 
-              : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20'"
-          >
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-bold text-slate-700 dark:text-gray-200">{{ t('results.chapter', { number: chapter.number }) }}</span>
-              <span 
-                class="text-sm font-bold px-2 py-1 rounded"
-                :class="chapter.percentage >= 65 
-                  ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' 
-                  : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'"
-              >
-                {{ chapter.percentage }}%
-              </span>
+        <div v-show="isChapterAnalysisOpen" class="px-6 pb-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div 
+              v-for="chapter in chapterStats" 
+              :key="chapter.number"
+              class="border rounded-lg p-4 transition-all duration-300"
+              :class="chapter.percentage >= 65 
+                ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20' 
+                : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20'"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-bold text-slate-700 dark:text-gray-200">{{ t('results.chapter', { number: chapter.number }) }}</span>
+                <span 
+                  class="text-sm font-bold px-2 py-1 rounded"
+                  :class="chapter.percentage >= 65 
+                    ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' 
+                    : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'"
+                >
+                  {{ chapter.percentage }}%
+                </span>
+              </div>
+              <p class="text-sm font-medium text-slate-600 dark:text-gray-400 mb-2">{{ chapter.name }}</p>
+              <p class="text-sm text-slate-500 dark:text-gray-500">
+                <span class="font-bold text-slate-700 dark:text-gray-300">{{ t('results.hits', { correct: chapter.correct, total: chapter.total }) }}</span>
+              </p>
             </div>
-            <p class="text-sm font-medium text-slate-600 dark:text-gray-400 mb-2">{{ chapter.name }}</p>
-            <p class="text-sm text-slate-500 dark:text-gray-500">
-              <span class="font-bold text-slate-700 dark:text-gray-300">{{ t('results.hits', { correct: chapter.correct, total: chapter.total }) }}</span>
-            </p>
           </div>
         </div>
       </div>
@@ -181,21 +226,40 @@ function getCorrectAnswerText(question) {
           class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border overflow-hidden transition-colors duration-300"
           :class="isCorrect(question) ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800'"
         >
-          <div class="p-6">
-            <div class="flex items-start justify-between mb-4">
-              <h4 class="text-lg font-medium text-slate-900 dark:text-white pr-4">
-                <span class="text-slate-400 dark:text-gray-500 mr-2">{{ index + 1 }}.</span>
-                <span v-html="question.text"></span>
-              </h4>
-              <span 
-                class="px-3 py-1 rounded-full text-sm font-bold shrink-0"
-                :class="isCorrect(question) ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'"
-              >
-                {{ isCorrect(question) ? t('results.correct_badge') : t('results.incorrect_badge') }}
-              </span>
+          <button 
+            @click="toggleQuestion(question.id)"
+            class="w-full text-left p-3 sm:p-6 flex flex-col gap-3 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            <!-- Header Row: Index + Badge/Chevron -->
+            <div class="flex items-center justify-between w-full">
+               <span class="text-sm font-bold text-slate-400 dark:text-gray-500">
+                 {{ t('results.question_number', { number: index + 1 }) }}
+               </span>
+               
+               <div class="flex items-center gap-2">
+                 <span 
+                  class="px-2 py-1 rounded text-xs font-bold"
+                  :class="isCorrect(question) ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'"
+                >
+                  {{ isCorrect(question) ? t('results.correct_badge') : t('results.incorrect_badge') }}
+                </span>
+                <component :is="expandedQuestions.has(question.id) ? ChevronUp : ChevronDown" class="w-5 h-5 text-slate-400" />
+               </div>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-4 mb-4 text-sm">
+            <!-- Body Row: Question Text (Full Width) -->
+            <div 
+              class="w-full text-base sm:text-lg font-medium text-slate-900 dark:text-white"
+            >
+              <div 
+                v-html="question.text" 
+                :class="{ 'line-clamp-2': !expandedQuestions.has(question.id) }" 
+              ></div>
+            </div>
+          </button>
+
+          <div v-show="expandedQuestions.has(question.id)" class="px-6 pb-6 pt-0">
+            <div class="grid md:grid-cols-2 gap-4 mb-4 text-sm mt-4">
               <div class="p-3 rounded-lg" :class="isCorrect(question) ? 'bg-green-50 dark:bg-green-900/10' : 'bg-red-50 dark:bg-red-900/10'">
                 <span class="block text-xs font-bold uppercase tracking-wider mb-1" 
                   :class="isCorrect(question) ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"

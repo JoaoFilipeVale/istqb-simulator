@@ -5,6 +5,7 @@
 @layer base {
     html {
         @apply h-full;
+        overscroll-behavior-y: none;
     }
 
     body {
