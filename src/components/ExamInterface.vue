@@ -101,13 +101,10 @@ function confirmFinish() {
 </script>
 
 <template>
-  <div class="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <div class="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-900 transition-colors duration-300 overflow-x-hidden">
     <!-- Header -->
     <header class="bg-white dark:bg-gray-800 shadow-sm z-30 transition-colors duration-300 sticky top-0">
       <div class="w-full h-16 flex">
-        <!-- Sidebar Match Column (Left) -->
-        <!-- Contains Menu, Title, Counter -->
-        <!-- Width adjusts based on sidebar state on Desktop -->
         <!-- Sidebar Match Column (Left) -->
         <!-- Contains Menu, Title, Counter -->
         <!-- Width adjusts based on sidebar state on Desktop -->
@@ -266,7 +263,7 @@ function confirmFinish() {
 
       <!-- Main Content Area (Includes Scrollable Q & Fixed Footer) -->
       <div class="flex flex-col flex-1 min-w-0 relative">
-        <main class="flex-1 overflow-y-auto p-0 sm:p-8">
+        <main class="flex-1 overflow-y-auto p-0 pb-24 sm:p-8 sm:pb-8">
           <div class="bg-white dark:bg-white sm:dark:bg-gray-800 min-h-full shadow-none sm:shadow-sm rounded-none sm:rounded-xl p-0 sm:p-8 max-w-5xl mx-auto transition-colors duration-300">
             <QuestionCard 
               :question="store.currentQuestion"
@@ -276,7 +273,8 @@ function confirmFinish() {
         </main>
 
         <!-- Unified Fixed Footer (All Screens) -->
-        <div class="shrink-0 bg-white dark:bg-gray-800 border-t border-slate-200 dark:border-gray-700 z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+        <!-- Fixed on Mobile (< lg), Static on Desktop (lg+) -->
+        <div class="fixed bottom-0 left-0 w-full lg:static lg:w-auto shrink-0 bg-white dark:bg-gray-800 border-t border-slate-200 dark:border-gray-700 z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
           <!-- CHANGED: sm:px-8 to align with card on Tablet (where Card has padding). lg:px-0 on Desktop. -->
           <div class="w-full max-w-5xl mx-auto flex justify-between items-center p-4 sm:px-8 lg:px-0">
             <button 
