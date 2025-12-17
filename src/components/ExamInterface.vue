@@ -103,7 +103,7 @@ function confirmFinish() {
 <template>
   <div class="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-900 transition-colors duration-300 overflow-x-hidden">
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow-sm z-30 transition-colors duration-300 sticky top-0">
+    <header class="bg-white dark:bg-gray-800 shadow-sm z-30 transition-colors duration-300 fixed top-0 left-0 w-full">
       <div class="w-full h-16 flex">
         <!-- Sidebar Match Column (Left) -->
         <!-- Contains Menu, Title, Counter -->
@@ -202,7 +202,7 @@ function confirmFinish() {
       </div>
     </header>
 
-    <div class="flex flex-1 overflow-hidden">
+    <div class="flex flex-1 overflow-hidden pt-[4.25rem]">
       <!-- Sidebar (Desktop) -->
       <!-- Use v-show or conditional class for transition -->
       <aside 
