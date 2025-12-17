@@ -101,7 +101,7 @@ function confirmFinish() {
 </script>
 
 <template>
-  <div class="flex flex-col h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <div class="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <!-- Header -->
     <header class="bg-white dark:bg-gray-800 shadow-sm z-30 transition-colors duration-300 sticky top-0">
       <div class="w-full h-16 flex">

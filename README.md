@@ -6,7 +6,6 @@
 ![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?logo=vue.js&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7.2-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss&logoColor=white)
-![Cypress](https://img.shields.io/badge/Cypress-13.6-17202C?logo=cypress&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
@@ -31,14 +30,10 @@ Built with **Vue 3**, **Vite**, and **Tailwind CSS**, it features a responsive d
 ## Table of Contents
 
 - [Overview](#overview)
-- [Technology Stack](#technology-stack)
 - [Environment Setup](#1-environment-setup)
   - [Prerequisites](#11-prerequisites)
   - [Installation](#12-installation)
 - [Running the Application](#2-running-the-application)
-- [Running Tests](#3-running-tests)
-  - [Interactive Mode](#31-interactive-mode)
-  - [Headless Mode](#32-headless-mode)
 - [Deployment](#4-deployment)
   - [GitHub Pages Configuration](#41-github-pages-configuration)
 - [Project Structure](#5-project-structure)
@@ -54,7 +49,6 @@ Built with **Vue 3**, **Vite**, and **Tailwind CSS**, it features a responsive d
 -   **Styling:** Tailwind CSS 3.4
 -   **State Management:** Pinia 3.0
 -   **Icons:** Lucide Vue
--   **Testing:** Cypress (End-to-End)
 
 ---
 
@@ -91,26 +85,6 @@ npm run dev
 ```
 
 The application will be available at `http://localhost:5173`.
-
----
-
-## 3. Running Tests
-
-This project uses **Cypress** for End-to-End (E2E) testing to ensure the exam flow works correctly.
-
-### 3.1. Interactive Mode
-Opens the Cypress Test Runner GUI. Useful for writing and debugging tests.
-
-```bash
-npm run test:e2e
-```
-
-### 3.2. Headless Mode
-Runs all tests in the terminal without opening a browser window. Ideal for CI/CD pipelines.
-
-```bash
-npm run test:e2e:run
-```
 
 ---
 
@@ -152,9 +126,6 @@ ISTQB_project/
 │   ├── stores/          # Pinia state stores (exam.js)
 │   ├── App.vue          # Root component
 │   └── main.js          # Application entry point
-│
-├── cypress/             # E2E Tests
-│   └── e2e/             # Test specifications (exam_flow.cy.js)
 │
 ├── .github/             # GitHub Actions workflows
 ├── vite.config.js       # Vite configuration
