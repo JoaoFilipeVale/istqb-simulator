@@ -1,5 +1,12 @@
 <script setup>
 import { computed } from 'vue'
+import InfoTooltip from './InfoTooltip.vue'
+import { useI18n } from 'vue-i18n'
+import { Pin } from 'lucide-vue-next'
+import { useExamStore } from '../stores/exam'
+
+const { t } = useI18n()
+const store = useExamStore()
 
 const props = defineProps({
   question: {
@@ -15,6 +22,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const isMultiple = computed(() => props.question.type === 'multiple')
+const isMarked = computed(() => !!store.markedQuestions[props.question.id])
 
 // Handle option selection
 // - Multiple choice: Toggles option in array
@@ -44,11 +52,23 @@ function isSelected(optionId) {
 </script>
 
 <template>
-  <div class="bg-white p-4 sm:p-6 rounded-none sm:rounded-xl shadow-none sm:shadow-sm border-0 sm:border border-slate-200">
-    <div class="mb-6">
+  <div 
+    class="bg-white p-4 sm:p-6 rounded-none sm:rounded-xl shadow-none sm:shadow-sm border transition-all duration-300 relative overflow-hidden"
+    :class="isMarked ? 'border-amber-400 ring-1 ring-amber-400 dark:border-amber-500 dark:ring-amber-500' : 'border-slate-200'"
+  >
+    <!-- Marked Indicator (Pin Icon) -->
+    <div 
+      v-if="isMarked" 
+      class="absolute top-0 right-0 p-3"
+    >
+      <Pin class="w-6 h-6 text-amber-500 fill-current drop-shadow-sm" />
+    </div>
+
+    <div class="mb-6 mr-8">
       <h3 class="text-lg font-medium text-slate-900 leading-relaxed" v-html="question.text" data-testid="question-text"></h3>
-      <p v-if="isMultiple" class="text-sm text-blue-600 font-medium mt-2 bg-blue-50 inline-block px-3 py-1 rounded-full">
-        Selecione duas opções
+      <p v-if="isMultiple" class="text-sm text-blue-600 font-medium mt-2 bg-blue-50 px-3 py-1 rounded-full flex items-center gap-2">
+        {{ $t('exam.select_two') }}
+        <InfoTooltip :text="t('tooltips.multiple_choice')" />
       </p>
     </div>
 
@@ -62,6 +82,7 @@ function isSelected(optionId) {
       >
         <div class="flex items-center h-5">
           <input 
+            :id="`q${question.id}-${option.id}`"
             :type="isMultiple ? 'checkbox' : 'radio'" 
             :name="'question-' + question.id"
             :value="option.id"
@@ -72,7 +93,7 @@ function isSelected(optionId) {
           >
         </div>
         <div class="ml-3 text-sm">
-          <label class="font-medium text-slate-700 cursor-pointer select-none" data-testid="answer-option">
+          <label :for="`q${question.id}-${option.id}`" class="font-medium text-slate-700 cursor-pointer select-none" data-testid="answer-option">
             <strong class="text-slate-900">{{ option.id.toUpperCase() }})</strong> {{ option.text }}
           </label>
         </div>

@@ -1,6 +1,6 @@
 <script setup>
 import { useExamStore } from '../stores/exam'
-import { GraduationCap, PlayCircle } from 'lucide-vue-next'
+import { GraduationCap, PlayCircle, BookOpen } from 'lucide-vue-next'
 
 const store = useExamStore()
 </script>
@@ -37,15 +37,24 @@ const store = useExamStore()
           </ul>
         </div>
 
-        <!-- Start Button -->
-        <button 
-          @click="store.startExam"
-          data-testid="start-exam-btn"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-        >
-          <PlayCircle class="w-6 h-6 mr-2 inline-block" />
-          {{ $t('welcome.start_button') }}
-        </button>
+        <!-- Start Buttons -->
+        <div class="flex flex-col sm:flex-row justify-center gap-4 w-full">
+          <button 
+            @click="store.startExam(false)"
+            class="flex-1 inline-flex items-center justify-center px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-lg group w-full sm:w-auto"
+          >
+            <BookOpen class="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
+            {{ $t('welcome.start_untimed') }}
+          </button>
+
+          <button 
+            @click="store.startExam(true)"
+            class="flex-1 inline-flex items-center justify-center px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-lg group w-full sm:w-auto"
+          >
+            <PlayCircle class="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
+            {{ $t('welcome.start_button') }}
+          </button>
+        </div>
       </div>
     </div>
 

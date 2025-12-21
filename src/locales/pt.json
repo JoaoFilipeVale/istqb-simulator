@@ -3,12 +3,13 @@
         "title": "Bem-vindo ao simulador de exame",
         "subtitle": "ISTQB® - Certified Tester Foundation Level",
         "instructions_title": "Instruções:",
-        "instruction_1": "O exame consiste em <span class=\"font-bold\">40 perguntas</span> de escolha múltipla.",
-        "instruction_2": "Tem <span class=\"font-bold\">60 minutos</span> para completar o exame.",
-        "instruction_3": "A pontuação de aprovação é de <span class=\"font-bold\">65%</span> (26 respostas corretas).",
-        "instruction_4": "Pode navegar livremente entre as perguntas e alterar as suas respostas antes de submeter.",
-        "instruction_5": "<span class=\"font-bold\">Simulação Realista:</span> As perguntas seguem a matriz de distribuição oficial do ISTQB.",
-        "start_button": "Iniciar exame",
+        "instruction_1": "O exame é constituído por <span class=\"font-bold\">40 perguntas</span> de escolha múltipla.",
+        "instruction_2": "Dispõe de <span class=\"font-bold\">60 minutos</span> para completar a prova.",
+        "instruction_3": "A nota mínima de aprovação é de <span class=\"font-bold\">65%</span> (26 respostas corretas).",
+        "instruction_4": "Pode navegar livremente, <span class=\"font-bold\">sinalizar questões</span> para revisão e alterar respostas antes de submeter.",
+        "instruction_5": "<span class=\"font-bold\">Simulação Fiel:</span> As perguntas respeitam a estrutura e distribuição oficial do ISTQB.",
+        "start_button": "Exame com tempo",
+        "start_untimed": "Exame sem tempo",
         "footer": {
             "developed_by": "Desenvolvido por João Vale",
             "opensource_link": "Projeto Open Source desenvolvido para fins educativos",
@@ -25,14 +26,19 @@
         "prev_button": "Anterior",
         "next_button": "Seguinte",
         "finish_exam_button": "Terminar exame",
+        "select_two": "Selecione duas opções",
         "confirm_modal": {
             "title": "Terminar o exame?",
             "message": "Tem a certeza que pretende submeter o exame agora? O tempo ainda não terminou. Uma vez submetido, não poderá alterar as suas respostas.",
             "summary": "Respondeu a <span class=\"font-bold\">{answered}</span> de <span class=\"font-bold\">{total}</span> perguntas.",
             "warning": "Ainda tem <span class=\"font-bold text-red-600 dark:text-red-400\">{remaining}</span> perguntas por responder.",
             "cancel": "Cancelar",
-            "confirm": "Terminar e Submeter"
-        }
+            "confirm": "Terminar e Submeter",
+            "marked_warning": "Tens <span class=\"font-bold text-amber-600 dark:text-amber-400\">{count}</span> perguntas marcadas para rever."
+        },
+        "mark_for_review": "Marcar para rever",
+        "flag_action": "Marcar",
+        "marked_state": "Marcada"
     },
     "results": {
         "passed": "APROVADO",
@@ -49,14 +55,28 @@
         "your_answer": "Sua resposta",
         "correct_answer": "Resposta correta",
         "no_answer": "Sem resposta",
-        "explanation": "Explicação:"
+        "explanation": "Explicação:",
+        "klevel_title": "Análise por nível cognitivo",
+        "k1_desc": "K1: Memorização",
+        "k2_desc": "K2: Compreensão",
+        "k3_desc": "K3: Aplicação",
+        "questions": "questões",
+        "recommendations_title": "Recomendações de estudo",
+        "recommendations_desc": "Com base no desempenho abaixo da aprovação (65%), sugerimos que reveja os seguintes capítulos:",
+        "review_chapter": "Rever Capítulo {number}"
     },
     "chapters": {
-        "1": "Fundamentos do Teste",
-        "2": "Testes no Ciclo de Vida de Desenvolvimento de Software",
-        "3": "Testes Estáticos",
-        "4": "Técnicas de Teste",
-        "5": "Gestão de Testes",
-        "6": "Ferramentas de Teste"
+        "1": "Fundamentos do teste",
+        "2": "Testes no ciclo de vida de desenvolvimento de software",
+        "3": "Testes estáticos",
+        "4": "Técnicas de teste",
+        "5": "Gestão de testes",
+        "6": "Ferramentas de teste"
+    },
+    "tooltips": {
+        "k_level": "O ISTQB utiliza níveis K para medir a profundidade do conhecimento:\n- K1 (Lembrar): Identificar e recordar termos e conceitos.\n- K2 (Compreender): Perceber e explicar conceitos ou processos.\n- K3 (Aplicar): Utilizar o conhecimento para resolver problemas ou realizar tarefas em contextos reais.",
+        "lo": "Os códigos LO (ex: FL-4.2.1) correspondem às secções específicas do Syllabus v4.0. Podes usá-los para encontrar rapidamente a matéria no manual oficial.",
+        "scoring": "O exame oficial CTFL v4.0 consiste em 40 questões. Para obteres a certificação, precisas de acertar em pelo menos 65% (26 de 40 questões).",
+        "multiple_choice": "Atenção: Para estas perguntas, deves selecionar todas as opções corretas. Não são atribuídos meios pontos; ou a resposta está totalmente correta ou será considerada errada."
     }
 }

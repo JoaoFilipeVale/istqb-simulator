@@ -4,7 +4,7 @@ import { useExamStore } from '../stores/exam'
 import QuestionCard from './QuestionCard.vue'
 import LanguageToggle from './LanguageToggle.vue'
 import ThemeToggle from './ThemeToggle.vue'
-import { ChevronLeft, ChevronRight, Clock, CheckCircle, AlertCircle, Menu, X, MoreVertical, LogOut, PanelLeftClose, PanelLeftOpen, HelpCircle } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, Clock, CheckCircle, AlertCircle, Menu, X, MoreVertical, LogOut, PanelLeftClose, PanelLeftOpen, HelpCircle, Pin } from 'lucide-vue-next'
 
 const store = useExamStore()
 const showConfirmModal = ref(false)
@@ -36,17 +36,7 @@ const handleResize = () => {
   }
 }
 
-onMounted(() => {
-  if (typeof window !== 'undefined') {
-    window.addEventListener('resize', handleResize)
-  }
-})
 
-onUnmounted(() => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('resize', handleResize)
-  }
-})
 
 // Format seconds into MM:SS string
 const formattedTime = computed(() => {
@@ -59,6 +49,8 @@ const formattedTime = computed(() => {
 const answeredCount = computed(() => {
   return Object.values(store.userAnswers).filter(ans => ans !== undefined && ans !== null && (Array.isArray(ans) ? ans.length > 0 : true)).length
 })
+
+const markedCount = computed(() => Object.keys(store.markedQuestions).length)
 
 // Two-way binding for the current question's answer
 // Syncs directly with the store
@@ -98,6 +90,35 @@ function confirmFinish() {
   store.finishExam()
   showConfirmModal.value = false
 }
+
+const isCurrentMarked = computed(() => !!store.markedQuestions[store.currentQuestion?.id])
+
+function toggleMark() {
+  if (store.currentQuestion) {
+    store.toggleMarkQuestion(store.currentQuestion.id)
+  }
+}
+
+function handleKeydown(e) {
+  if (e.key.toLowerCase() === 'f' && !e.target.matches('input, textarea')) {
+    e.preventDefault()
+    toggleMark()
+  }
+}
+
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('keydown', handleKeydown)
+  }
+})
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', handleResize)
+    window.removeEventListener('keydown', handleKeydown)
+  }
+})
 </script>
 
 <template>
@@ -143,7 +164,7 @@ function confirmFinish() {
           <!-- CHANGED: sm:pr-16 (was 24) to bring buttons closer to Options on Tablet. -->
           <div class="w-full max-w-5xl mx-auto flex justify-end items-center space-x-2 sm:space-x-3 pr-10 sm:pr-16 lg:px-0 transition-all">
             <!-- Timer -->
-            <div class="flex items-center space-x-2 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 sm:px-4 py-2 rounded-full" data-testid="exam-timer">
+            <div v-if="store.isTimed" class="flex items-center space-x-2 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 sm:px-4 py-2 rounded-full" data-testid="exam-timer">
               <Clock class="w-5 h-5" />
               <span class="font-mono font-bold text-lg leading-none">{{ formattedTime }}</span>
             </div>
@@ -216,7 +237,7 @@ function confirmFinish() {
               v-for="(q, index) in store.shuffledQuestions"
               :key="q.id"
               @click="store.jumpToQuestion(index)"
-              class="w-10 h-10 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
+              class="w-10 h-10 rounded-lg text-sm font-medium transition-colors flex items-center justify-center relative"
               :class="[
                 store.currentQuestionIndex === index 
                   ? 'bg-blue-600 text-white ring-2 ring-blue-300 dark:ring-blue-700 ring-offset-2 dark:ring-offset-gray-800' 
@@ -226,6 +247,10 @@ function confirmFinish() {
               ]"
             >
               {{ index + 1 }}
+              <span 
+                v-if="store.markedQuestions[q.id]" 
+                class="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 border-2 border-white dark:border-gray-800 rounded-full z-10"
+              ></span>
             </button>
           </div>
         </div>
@@ -246,7 +271,7 @@ function confirmFinish() {
               v-for="(q, index) in store.shuffledQuestions"
               :key="q.id"
               @click="{ store.jumpToQuestion(index); isSidebarOpen = false; }"
-              class="w-10 h-10 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
+              class="w-10 h-10 rounded-lg text-sm font-medium transition-colors flex items-center justify-center relative"
               :class="[
                 store.currentQuestionIndex === index 
                   ? 'bg-blue-600 text-white' 
@@ -256,6 +281,10 @@ function confirmFinish() {
               ]"
             >
               {{ index + 1 }}
+              <span 
+                v-if="store.markedQuestions[q.id]" 
+                class="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 border-2 border-white dark:border-gray-800 rounded-full z-10"
+              ></span>
             </button>
           </div>
         </div>
@@ -264,7 +293,7 @@ function confirmFinish() {
       <!-- Main Content Area (Includes Scrollable Q & Fixed Footer) -->
       <div class="flex flex-col flex-1 min-w-0 relative">
         <main class="flex-1 overflow-y-auto p-0 pb-24 sm:p-8 sm:pb-8">
-          <div class="bg-white dark:bg-white sm:dark:bg-gray-800 min-h-full shadow-none sm:shadow-sm rounded-none sm:rounded-xl p-0 sm:p-8 max-w-5xl mx-auto transition-colors duration-300">
+          <div class="bg-white dark:bg-white sm:bg-transparent sm:dark:bg-transparent min-h-full shadow-none rounded-none p-0 sm:p-8 max-w-5xl mx-auto transition-colors duration-300">
             <QuestionCard 
               :question="store.currentQuestion"
               v-model="currentAnswer"
@@ -285,6 +314,24 @@ function confirmFinish() {
             >
               <ChevronLeft class="w-5 h-5 mr-1" />
               {{ $t('exam.prev_button') }}
+            </button>
+
+            <!-- Flag Button (Centered) -->
+             <button 
+              @click="toggleMark"
+              class="flex flex-col items-center justify-center p-2 rounded-lg transition-colors group relative"
+              :class="isCurrentMarked 
+                ? 'text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-900/20' 
+                : 'text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-700/50'"
+              :title="$t('exam.mark_for_review') + ' (F)'"
+            >
+              <Pin 
+                class="w-6 h-6 transition-transform group-active:scale-90" 
+                :class="{ 'fill-current': isCurrentMarked }"
+              />
+              <span class="text-[0.6rem] font-bold uppercase tracking-wider mt-0.5">
+                {{ isCurrentMarked ? $t('exam.marked_state') : $t('exam.flag_action') }}
+              </span>
             </button>
 
             <button 
@@ -328,9 +375,10 @@ function confirmFinish() {
           </p>
           
           <!-- Status Summary -->
-          <div class="bg-slate-50 dark:bg-gray-700/50 rounded-lg p-4 text-center text-sm">
+          <div class="bg-slate-50 dark:bg-gray-700/50 rounded-lg p-4 text-center text-sm space-y-2">
             <p class="text-slate-700 dark:text-gray-300" v-html="$t('exam.confirm_modal.summary', { answered: answeredCount, total: store.totalQuestions })"></p>
-            <p v-if="answeredCount < store.totalQuestions" class="mt-2 text-slate-600 dark:text-gray-400" v-html="$t('exam.confirm_modal.warning', { remaining: store.totalQuestions - answeredCount })"></p>
+            <p v-if="answeredCount < store.totalQuestions" class="text-slate-600 dark:text-gray-400" v-html="$t('exam.confirm_modal.warning', { remaining: store.totalQuestions - answeredCount })"></p>
+            <p v-if="markedCount > 0" class="text-amber-600 dark:text-amber-400 font-medium pt-2 border-t border-slate-200 dark:border-gray-600" v-html="$t('exam.confirm_modal.marked_warning', { count: markedCount })"></p>
           </div>
         </div>
 

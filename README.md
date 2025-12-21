@@ -22,6 +22,7 @@ Built with **Vue 3**, **Vite**, and **Tailwind CSS**, it features a responsive d
 *   **Realistic Exam Mode:** 40 questions selected randomly based on the official ISTQB® v4.0 distribution matrix.
 *   **Performance Analytics:** Detailed breakdown of scores per chapter (e.g., Chapter 1: Fundamentals of Testing).
 *   **Instant Feedback:** Explanations for every question to aid learning.
+*   **Mark for Review:** Flag questions during the exam to revisit them before submitting.
 *   **Dark/Light Mode:** Toggle between themes for a comfortable reading experience.
 *   **Responsive Design:** Optimized for desktop (with collapsible sidebar), tablet, and mobile devices.
 

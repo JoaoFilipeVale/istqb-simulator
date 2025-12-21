@@ -12,6 +12,7 @@ export const useExamStore = defineStore('exam', () => {
     const currentQuestionIndex = ref(0)
     const userAnswers = ref({})
     const timeLeft = ref(3600)
+    const isTimed = ref(true)
     const shuffledQuestions = ref([])
     let timerInterval = null
 
@@ -57,15 +58,32 @@ export const useExamStore = defineStore('exam', () => {
      * Internal helper to generate weighted exam from the CURRENT language source.
      * Takes the 100 questions and picks 40 based on distribution.
      */
-    function generateWeightedExam() {
+    /**
+     * Gera um exame oficial seguindo a matriz exata do Syllabus v4.0.
+     * Distribuição Obrigatória:
+     * - Cap 1: 8 questões
+     * - Cap 2: 6 questões
+     * - Cap 3: 4 questões
+     * - Cap 4: 11 questões
+     * - Cap 5: 9 questões
+     * - Cap 6: 2 questões
+     * Total: 40 questões
+     */
+    function generateOfficialExam() {
         const sourceFn = availableQuestions.value
         // Use default empty array if source is undefined (e.g. during hot reload or init issues)
         const source = sourceFn || []
 
-        const distribution = {
-            1: 8, 2: 6, 3: 4, 4: 11, 5: 9, 6: 2
+        const officialDistribution = {
+            1: 8,
+            2: 6,
+            3: 4,
+            4: 11,
+            5: 9,
+            6: 2
         }
 
+        // Agrupar questões por capítulo
         const questionsByChapter = {}
         source.forEach(q => {
             if (!questionsByChapter[q.chapter]) {
@@ -74,6 +92,7 @@ export const useExamStore = defineStore('exam', () => {
             questionsByChapter[q.chapter].push(q)
         })
 
+        // Fisher-Yates Shuffle
         function shuffle(array) {
             const shuffled = [...array]
             for (let i = shuffled.length - 1; i > 0; i--) {
@@ -84,15 +103,30 @@ export const useExamStore = defineStore('exam', () => {
         }
 
         const selectedQuestions = []
-        Object.entries(distribution).forEach(([chapter, count]) => {
+        let logDistribution = {}
+
+        Object.entries(officialDistribution).forEach(([chapter, count]) => {
             const chapterNumber = parseInt(chapter)
             const available = questionsByChapter[chapterNumber] || []
+
+            // Randomizar as questões disponíveis do capítulo
             const shuffled = shuffle(available)
-            // If we don't have enough questions (e.g. while building EN file), take what we have
+
+            // Selecionar a quantidade exata
             const selected = shuffled.slice(0, count)
+
+            // Aviso se não houver questões suficientes (para debug)
+            if (selected.length < count) {
+                console.warn(`Aviso: Capítulo ${chapter} só tem ${selected.length} questões disponíveis (necessárias: ${count})`)
+            }
+
             selectedQuestions.push(...selected)
+            logDistribution[chapter] = selected.length
         })
 
+        console.log("Distribuição do Exame Gerado:", logDistribution)
+
+        // Baralhar o exame final para a ordem das questões não ser sequencial por capítulo
         return shuffle(selectedQuestions)
     }
 
@@ -116,13 +150,19 @@ export const useExamStore = defineStore('exam', () => {
         }
     }
 
-    function startExam() {
+    function startExam(timed = true) {
         status.value = 'active'
         currentQuestionIndex.value = 0
         userAnswers.value = {}
         timeLeft.value = 3600
-        shuffledQuestions.value = generateWeightedExam()
-        startTimer()
+        isTimed.value = timed
+        shuffledQuestions.value = generateOfficialExam()
+
+        if (timed) {
+            startTimer()
+        } else {
+            stopTimer()
+        }
     }
 
     function startTimer() {
@@ -167,11 +207,22 @@ export const useExamStore = defineStore('exam', () => {
         status.value = 'finished'
     }
 
+    const markedQuestions = ref({})
+
+    function toggleMarkQuestion(questionId) {
+        if (markedQuestions.value[questionId]) {
+            delete markedQuestions.value[questionId]
+        } else {
+            markedQuestions.value[questionId] = true
+        }
+    }
+
     function resetExam() {
         stopTimer()
         status.value = 'welcome'
         currentQuestionIndex.value = 0
         userAnswers.value = {}
+        markedQuestions.value = {}
         timeLeft.value = 3600
     }
 
@@ -194,6 +245,9 @@ export const useExamStore = defineStore('exam', () => {
         jumpToQuestion,
         finishExam,
         resetExam,
-        swapLanguage // Export this so we can watch locale changes
+        swapLanguage, // Export this so we can watch locale changes
+        isTimed,
+        markedQuestions,
+        toggleMarkQuestion
     }
 })
