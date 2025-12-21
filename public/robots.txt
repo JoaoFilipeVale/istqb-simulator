@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://joaofilipevale.github.io/istqb-simulator/sitemap.xml
