@@ -35,8 +35,11 @@ Built with **Vue 3**, **Vite**, and **Tailwind CSS**, it features a responsive d
   - [Installation](#12-installation)
 - [Running the Application](#2-running-the-application)
 - [Deployment](#4-deployment)
-  - [GitHub Pages Configuration](#41-github-pages-configuration)
+  - [Automated Deployment](#41-automated-deployment-github-actions)
+  - [Manual Deployment](#42-manual-deployment)
 - [Project Structure](#5-project-structure)
+- [Contributing](#6-contributing)
+  - [Commit Standards](#61-commit-standards)
 - [Legal Disclaimer](#legal-disclaimer)
 - [Final Notes](#final-notes)
 
@@ -90,27 +93,39 @@ The application will be available at `http://localhost:5173`.
 
 ## 4. Deployment
 
-This project is configured for easy deployment to **GitHub Pages**.
+### 4.1. Automated Deployment (GitHub Actions)
 
-### 4.1. GitHub Pages Configuration
+This project uses **GitHub Actions** to automatically build and deploy the application to **GitHub Pages**.
 
-1.  **Update `vite.config.js`:**
-    Ensure the `base` property matches your repository name:
-    ```javascript
-    export default defineConfig({
-      base: command === 'serve' ? '/' : '/istqb-simulator/', // Replace with your repository name
-      // ...
-    })
-    ```
+-   **Trigger:** Pushes to the `main` branch.
+-   **Workflow File:** `.github/workflows/deploy.yml`
 
-2.  **Build and Deploy:**
-    You can deploy manually or use the included GitHub Actions workflow (`.github/workflows/deploy.yml`) which automatically deploys on push to the `main` branch.
+The workflow performs the following steps:
+1.  **Checkout:** Retrieves the code.
+2.  **Setup:** Sets up Node.js environment.
+3.  **Install:** Installs dependencies (`npm ci`).
+4.  **Build:** Builds the project (`npm run build`).
+5.  **Deploy:** Uploads the artifact and deploys it to GitHub Pages.
 
-    **Manual Build:**
+### 4.2. Manual Deployment
+
+If you prefer to build and deploy manually:
+
+1.  **Build the Project:**
+    Generate the production-ready static files:
     ```bash
     npm run build
-    # The output will be in the 'dist' folder
     ```
+    The output will be located in the `dist/` directory.
+
+2.  **Preview locally:**
+    To test the production build locally before deploying:
+    ```bash
+    npm run preview
+    ```
+
+> **Note:** The `vite.config.js` is configured to handle the `base` path automatically based on the mode (`serve` vs `build`). Ensure your repository name matches the path if modifying manually.
+
 
 ---
 
@@ -130,6 +145,35 @@ ISTQB_project/
 ├── .github/             # GitHub Actions workflows
 ├── vite.config.js       # Vite configuration
 └── tailwind.config.js   # Tailwind CSS configuration
+```
+
+---
+
+## 6. Contributing
+
+Contributions are welcome! To ensure a consistent history, we follow specific standards.
+
+### 6.1. Commit Standards
+
+We use **Conventional Commits** to keep our git history readable and semantic.
+
+**Format:**
+```text
+<type>: <description>
+```
+
+**Common Types:**
+-   `feat`: A new feature (e.g., `feat: add dark mode switch`).
+-   `fix`: A bug fix (e.g., `fix: incorrect calculation in results`).
+-   `docs`: Documentation only changes (e.g., `docs: update deployment steps`).
+-   `style`: Formatting, missing semi-colons, etc; no code change.
+-   `refactor`: A code change that neither fixes a bug nor adds a feature.
+-   `test`: Adding missing tests or correcting existing tests.
+-   `chore`: Maintenance tasks, dependencies (e.g., `chore: update dependencies`).
+
+**Example:**
+```bash
+git commit -m "feat: add timer to questions"
 ```
 
 ---
