@@ -9,7 +9,32 @@
         "instruction_4": "Pode navegar livremente, <span class=\"font-bold\">sinalizar questões</span> para revisão e alterar respostas antes de submeter.",
         "instruction_5": "<span class=\"font-bold\">Simulação Fiel:</span> As perguntas respeitam a estrutura e distribuição oficial do ISTQB.",
         "start_button": "Exame com tempo",
-        "start_untimed": "Exame sem tempo",
+        "conditions": {
+            "intro": "As condições abaixo aplicam-se a um exame oficial. Num exame de prática, apenas a duração e a nota de aprovação são aplicáveis.",
+            "title": "Condições do Exame",
+            "format_title": "Formato do exame",
+            "format_1": "Este exame consiste em 40 perguntas de escolha múltipla.",
+            "format_2": "Cada resposta correta vale 1 ponto, sendo possível obter um máximo de 40 pontos.",
+            "format_3": "A duração do exame é de 60 minutos.",
+            "format_4": "Para aprovação, é necessário atingir 65%.",
+            "forbidden_intro": "Durante o exame, é ESTRITAMENTE PROIBIDO:",
+            "forbidden_1": "Tirar capturas de ecrã",
+            "forbidden_1_suffix": "do conteúdo do exame.",
+            "forbidden_2": "Copiar e divulgar",
+            "forbidden_2_suffix": "conteúdos do exame ou outras informações confidenciais.",
+            "forbidden_3": "Utilizar dispositivos extra ou materiais não autorizados",
+            "forbidden_3_suffix": ".",
+            "forbidden_4": "Conversar",
+            "forbidden_4_suffix": "durante o exame.",
+            "forbidden_5": "Ter uma terceira pessoa",
+            "forbidden_5_suffix": "junto de si.",
+            "violation": "A violação de qualquer uma das regras acima pode levar à interrupção do exame e à anulação dos resultados.",
+            "agreement_title": "Concordância",
+            "agreement_1": "Ao iniciar o exame, o participante concorda em não copiar e/ou divulgar qualquer conteúdo deste exame.",
+            "agreement_2": "Ao iniciar o exame, o participante confirma que leu as condições, compreendeu-as e concorda com elas."
+        },
+        "start_button_official": "Iniciar exame",
+        "start_untimed": "Praticar (sem tempo)",
         "footer": {
             "developed_by": "Desenvolvido por João Vale",
             "opensource_link": "Projeto Open Source desenvolvido para fins educativos",
@@ -30,20 +55,22 @@
         "confirm_modal": {
             "title": "Terminar o exame?",
             "message": "Tem a certeza que pretende submeter o exame agora? O tempo ainda não terminou. Uma vez submetido, não poderá alterar as suas respostas.",
-            "summary": "Respondeu a <span class=\"font-bold\">{answered}</span> de <span class=\"font-bold\">{total}</span> perguntas.",
-            "warning": "Ainda tem <span class=\"font-bold text-red-600 dark:text-red-400\">{remaining}</span> perguntas por responder.",
+            "summary": "Respondeu a {answered} de {total} perguntas.",
+            "warning": "Ainda tem {remaining} perguntas por responder.",
             "cancel": "Cancelar",
             "confirm": "Terminar e Submeter",
-            "marked_warning": "Tens <span class=\"font-bold text-amber-600 dark:text-amber-400\">{count}</span> perguntas marcadas para rever."
+            "marked_warning": "Tens {count} perguntas marcadas para rever."
         },
         "mark_for_review": "Marcar para rever",
         "flag_action": "Marcar",
-        "marked_state": "Marcada"
+        "marked_state": "Marcada",
+        "close_sidebar": "Fechar barra lateral",
+        "open_sidebar": "Abrir barra lateral"
     },
     "results": {
         "passed": "APROVADO",
         "failed": "REPROVADO",
-        "score_summary": "Respondeu a <span class=\"font-bold\">{answered}</span> questões de <span class=\"font-bold\">{total}</span> e acertou <span class=\"font-bold\">{score}</span> questões ({percentage}% de acerto)",
+        "score_summary": "Respondeu a {answered} questões de {total} e acertou {score} questões ({percentage}% de acerto)",
         "question_number": "Questão {number}",
         "restart_button": "Repetir exame",
         "chapter_analysis_title": "Análise por capítulo",
@@ -78,5 +105,32 @@
         "lo": "Os códigos LO (ex: FL-4.2.1) correspondem às secções específicas do Syllabus v4.0. Podes usá-los para encontrar rapidamente a matéria no manual oficial.",
         "scoring": "O exame oficial CTFL v4.0 consiste em 40 questões. Para obteres a certificação, precisas de acertar em pelo menos 65% (26 de 40 questões).",
         "multiple_choice": "Atenção: Para estas perguntas, deves selecionar todas as opções corretas. Não são atribuídos meios pontos; ou a resposta está totalmente correta ou será considerada errada."
+    },
+    "calculator": {
+        "title": "Calculadora"
+    },
+    "notepad": {
+        "title": "Bloco de Notas",
+        "placeholder": "Escreva aqui as suas notas...",
+        "auto_saved": "As notas são guardadas automaticamente nesta sessão"
+    },
+    "results_pdf": {
+        "download_button": "Descarregar relatório (PDF)",
+        "report_title": "Relatório de resultados do exame",
+        "candidate": "Candidato",
+        "date": "Data",
+        "score": "Pontuação",
+        "result": "Resultado",
+        "domain_breakdown": "Análise por domínio",
+        "topic": "Tópico",
+        "max_points": "Pontos máximos",
+        "percent": "Percentagem",
+        "app_name": "Simulador de exame ISTQB",
+        "anonymous_candidate": "Candidato anónimo",
+        "passed": "APROVADO",
+        "failed": "REPROVADO",
+        "total": "Total",
+        "page_x_of_y": "Página {current} de {total}",
+        "generated_by": "Gerado pelo Simulador de exame ISTQB em"
     }
 }

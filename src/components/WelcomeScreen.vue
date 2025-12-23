@@ -9,7 +9,8 @@ const store = useExamStore()
   <div class="w-full flex-1 flex flex-col">
     <!-- Main Content Area -->
     <div class="flex-1 flex items-center justify-center p-4">
-      <div class="max-w-2xl w-full bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl text-center transition-colors duration-300 flex flex-col justify-center">
+      <div class="max-w-5xl w-full bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl text-center transition-colors duration-300 flex flex-col justify-center">
+
         <!-- Icon -->
         <div class="flex justify-center mb-4">
           <GraduationCap class="w-16 h-16 text-blue-600 dark:text-blue-400" />
@@ -25,34 +26,56 @@ const store = useExamStore()
           <span class="inline-block bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm font-bold px-2 py-1 rounded">(v4.0)</span>
         </div>
         
-        <!-- Instructions Box -->
-        <div class="space-y-4 text-slate-600 dark:text-gray-300 mb-8 text-left bg-slate-50 dark:bg-gray-700 p-4 sm:p-6 rounded-lg border border-slate-200 dark:border-gray-600">
-          <p class="font-semibold text-lg mb-2 text-slate-900 dark:text-white">{{ $t('welcome.instructions_title') }}</p>
-          <ul class="list-disc list-inside space-y-2">
-            <li v-html="$t('welcome.instruction_1')"></li>
-            <li v-html="$t('welcome.instruction_2')"></li>
-            <li v-html="$t('welcome.instruction_3')"></li>
-            <li v-html="$t('welcome.instruction_4')"></li>
-            <li class="text-blue-700 dark:text-blue-300" v-html="$t('welcome.instruction_5')"></li>
-          </ul>
+        <!-- Examination Conditions (Official Look) -->
+        <div class="text-left space-y-6 mb-8 text-sm sm:text-base text-slate-700 dark:text-gray-300 bg-slate-50 dark:bg-gray-700/50 p-6 rounded-lg border border-slate-200 dark:border-gray-600 max-h-[80vh] overflow-y-auto">
+          
+          <p class="font-bold">{{ $t('welcome.conditions.intro') }}</p>
+          
+          <div>
+            <h3 class="font-bold mb-1">{{ $t('welcome.conditions.title') }}</h3>
+            <h4 class="font-semibold underline">{{ $t('welcome.conditions.format_title') }}</h4>
+            <ul class="list-disc list-inside ml-2 space-y-1">
+                <li>{{ $t('welcome.conditions.format_1') }}</li>
+                <li>{{ $t('welcome.conditions.format_2') }}</li>
+                <li>{{ $t('welcome.conditions.format_3') }}</li>
+                <li>{{ $t('welcome.conditions.format_4') }}</li>
+            </ul>
+          </div>
+
+          <div>
+             <p class="font-bold mb-1">{{ $t('welcome.conditions.forbidden_intro') }}</p>
+             <ul class="list-disc list-inside ml-2 space-y-1">
+                <li><span class="font-bold">{{ $t('welcome.conditions.forbidden_1') }}</span> {{ $t('welcome.conditions.forbidden_1_suffix') }}</li>
+                <li><span class="font-bold">{{ $t('welcome.conditions.forbidden_2') }}</span> {{ $t('welcome.conditions.forbidden_2_suffix') }}</li>
+                <li><span class="font-bold">{{ $t('welcome.conditions.forbidden_3') }}</span> {{ $t('welcome.conditions.forbidden_3_suffix') }}</li>
+                <li><span class="font-bold">{{ $t('welcome.conditions.forbidden_4') }}</span> {{ $t('welcome.conditions.forbidden_4_suffix') }}</li>
+                <li><span class="font-bold">{{ $t('welcome.conditions.forbidden_5') }}</span> {{ $t('welcome.conditions.forbidden_5_suffix') }}</li>
+             </ul>
+             <p class="mt-2 text-xs italic opacity-75">{{ $t('welcome.conditions.violation') }}</p>
+          </div>
+
+          <div>
+            <h3 class="font-bold mb-1">{{ $t('welcome.conditions.agreement_title') }}</h3>
+            <p>{{ $t('welcome.conditions.agreement_1') }}</p>
+            <p>{{ $t('welcome.conditions.agreement_2') }}</p>
+          </div>
+
         </div>
 
         <!-- Start Buttons -->
-        <div class="flex flex-col sm:flex-row justify-center gap-4 w-full">
+        <div class="flex flex-col sm:flex-row justify-end gap-4 w-full border-t border-slate-200 dark:border-gray-700 pt-6">
           <button 
             @click="store.startExam(false)"
-            class="flex-1 inline-flex items-center justify-center px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-lg group w-full sm:w-auto"
+            class="inline-flex items-center justify-center px-6 py-3 h-14 text-slate-700 bg-slate-200 hover:bg-slate-300 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 font-bold rounded-lg transition-all shadow hover:shadow-md text-lg uppercase tracking-wide"
           >
-            <BookOpen class="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
             {{ $t('welcome.start_untimed') }}
           </button>
 
           <button 
             @click="store.startExam(true)"
-            class="flex-1 inline-flex items-center justify-center px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-lg group w-full sm:w-auto"
+            class="inline-flex items-center justify-center px-8 py-3 h-14 bg-lime-600 hover:bg-lime-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all text-lg uppercase tracking-wide"
           >
-            <PlayCircle class="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
-            {{ $t('welcome.start_button') }}
+            {{ $t('welcome.start_button_official', 'Start Examination') }}
           </button>
         </div>
       </div>

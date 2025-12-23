@@ -4,11 +4,25 @@ import { useExamStore } from '../stores/exam'
 import QuestionCard from './QuestionCard.vue'
 import LanguageToggle from './LanguageToggle.vue'
 import ThemeToggle from './ThemeToggle.vue'
-import { ChevronLeft, ChevronRight, Clock, CheckCircle, AlertCircle, Menu, X, MoreVertical, LogOut, PanelLeftClose, PanelLeftOpen, HelpCircle, Pin } from 'lucide-vue-next'
+import Calculator from './Calculator.vue'
+import Notepad from './Notepad.vue'
+
+import { 
+  ChevronLeft, ChevronRight, Clock, CheckCircle, AlertCircle, Menu, X, MoreVertical, LogOut, PanelLeftClose, PanelLeftOpen, HelpCircle, Pin,
+  Calculator as CalculatorIcon, FileEdit 
+} from 'lucide-vue-next'
+
+import { useI18n } from 'vue-i18n'
 
 const store = useExamStore()
+const { t } = useI18n() 
 const showConfirmModal = ref(false)
 const showOptionsMenu = ref(false) // Header options toggle
+
+// Tool Modals State
+const showCalculator = ref(false)
+const showNotepad = ref(false)
+
 
 // Sidebar State
 // Default to open on large screens, closed on small
@@ -127,112 +141,139 @@ onUnmounted(() => {
   <div class="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-900 transition-colors duration-300 overflow-x-hidden">
     <!-- Header -->
     <header class="bg-white dark:bg-gray-800 shadow-sm z-30 transition-colors duration-300 fixed top-0 left-0 w-full">
-      <div class="w-full h-16 flex">
-        <!-- Sidebar Match Column (Left) -->
-        <!-- Contains Menu, Title, Counter -->
-        <!-- Width adjusts based on sidebar state on Desktop -->
-        <div 
-          class="flex items-center px-4 transition-all duration-300 border-slate-200 dark:border-gray-700 whitespace-nowrap relative z-50"
-          :class="[
-            isSidebarOpen ? 'lg:w-96' : 'w-auto lg:w-0 lg:px-0 lg:overflow-visible'
-          ]"
-        >
+      <div class="w-full h-16 flex items-center px-4 justify-between bg-white dark:bg-gray-800 relative z-20">
+        <!-- LEFT: Sidebar Toggle, Counter, Navigation -->
+        <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+          <!-- Sidebar Toggle -->
           <button 
-            @click="isSidebarOpen = !isSidebarOpen" 
-            class="p-2 mr-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-700 rounded-lg transition-colors" 
-            data-testid="sidebar-toggle"
-            :title="isSidebarOpen ? $t('exam.close_sidebar') : $t('exam.open_sidebar')"
-          >
-            <PanelLeftClose v-if="isSidebarOpen" class="w-6 h-6" />
-            <PanelLeftOpen v-else class="w-6 h-6" />
-          </button>
-          
-          <!-- Title & Counter Group -->
-          <!-- Always visible, regardless of sidebar state -->
-          <div class="flex flex-col justify-center gap-0.5 transition-all duration-300">
-             <h1 class="text-base sm:text-lg font-bold text-slate-800 dark:text-white hidden md:block leading-none">
-               {{ $t('exam.title') }}
-             </h1>
-             <span class="text-xs text-slate-500 dark:text-gray-400 font-medium">
-               {{ $t('exam.question_counter', { current: store.currentQuestionIndex + 1, total: store.totalQuestions }) }}
-             </span>
-          </div>
+              @click="isSidebarOpen = !isSidebarOpen" 
+              class="p-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-700 rounded-lg transition-colors" 
+              data-testid="sidebar-toggle"
+              :title="isSidebarOpen ? $t('exam.close_sidebar') : $t('exam.open_sidebar')"
+            >
+              <PanelLeftClose v-if="isSidebarOpen" class="w-6 h-6" />
+              <PanelLeftOpen v-else class="w-6 h-6" />
+            </button>
+
+            <!-- Counter -->
+            <div class="flex items-center text-sm font-bold text-slate-600 dark:text-gray-400 shrink-0">
+               <span>{{ store.currentQuestionIndex + 1 }}</span>
+               <span class="mx-1 opacity-50">/</span>
+               <span class="opacity-75">{{ store.totalQuestions }}</span>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex items-center space-x-1 shrink-0">
+                <button @click="store.prevQuestion" :disabled="store.isFirstQuestion" class="toolbar-btn p-2 flex items-center justify-center min-w-[40px] min-h-[40px]" :title="$t('exam.prev_button')">
+                    <ChevronLeft class="w-6 h-6" />
+                </button>
+                <button @click="store.nextQuestion" :disabled="!store.userAnswers[store.currentQuestion?.id] && !store.shuffledQuestions[store.currentQuestionIndex+1]" class="toolbar-btn p-2 flex items-center justify-center min-w-[40px] min-h-[40px]" :title="$t('exam.next_button')">
+                    <ChevronRight class="w-6 h-6" />
+                </button>
+            </div>
+            
+             <!-- DESKTOP TOOLS (Hidden on Mobile) -->
+            <div class="hidden lg:flex items-center gap-4 ml-4 pl-4 border-l border-slate-200 dark:border-gray-700">
+                <button @click="toggleMark" class="toolbar-tool-btn p-2 flex items-center justify-center min-w-[40px] min-h-[40px] rounded-lg transition-colors" :class="isCurrentMarked ? 'text-amber-600 dark:text-amber-500 bg-amber-100 dark:bg-amber-900/30' : 'text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700'" :title="$t('exam.mark_for_review')">
+                    <Pin class="w-5 h-5" :class="{ 'fill-current': isCurrentMarked }" />
+                </button>
+                <button @click="showCalculator = !showCalculator" class="toolbar-tool-btn p-2 flex items-center justify-center min-w-[40px] min-h-[40px] rounded-lg transition-colors" :class="showCalculator ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700'" :title="$t('calculator.title')">
+                    <CalculatorIcon class="w-5 h-5" />
+                </button>
+                <button @click="showNotepad = !showNotepad" class="toolbar-tool-btn p-2 flex items-center justify-center min-w-[40px] min-h-[40px] rounded-lg transition-colors" :class="showNotepad ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700'" :title="$t('notepad.title')">
+                    <FileEdit class="w-5 h-5" />
+                </button>
+            </div>
         </div>
 
-        <!-- Main Content Match Column (Right) -->
-        <div class="flex-1 flex items-center px-4 sm:px-8 relative">
-          <!-- Centered Container for Alignment (Matches Question Card max-w-5xl) -->
-          <!-- CHANGED: lg:px-0 to align with OUTSIDE of card on Desktop. -->
-          <!-- CHANGED: sm:pr-16 (was 24) to bring buttons closer to Options on Tablet. -->
-          <div class="w-full max-w-5xl mx-auto flex justify-end items-center space-x-2 sm:space-x-3 pr-10 sm:pr-16 lg:px-0 transition-all">
-            <!-- Timer -->
-            <div 
+        <!-- RIGHT: Timer, Finish, More Options -->
+        <div class="flex items-center gap-4 shrink-0 ml-auto mr-0">
+             
+             <!-- Timer -->
+             <div 
               v-if="store.isTimed" 
-              class="flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-full transition-colors duration-500"
-              :class="isLowTime 
-                ? 'text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-900/30 animate-pulse' 
-                : 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30'"
-              data-testid="exam-timer"
+              class="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 rounded-full transition-colors duration-500 bg-slate-100 dark:bg-gray-700/50"
+              :class="isLowTime ? 'text-amber-600 animate-pulse' : 'text-blue-600 dark:text-blue-400'"
             >
-              <Clock class="w-5 h-5" />
-              <span class="font-mono font-bold text-lg leading-none">{{ formattedTime }}</span>
+              <Clock class="w-4 h-4" />
+              <span class="font-mono font-bold text-sm sm:text-base">{{ formattedTime }}</span>
             </div>
 
-            <!-- Finish Button (Responsive) -->
+            <!-- Finish (Icon Only) -->
             <button 
               @click="handleFinish"
-              data-testid="finish-exam-btn"
-              class="flex items-center text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg px-2 sm:px-4 py-2 text-sm font-medium transition-colors"
+              class="flex items-center justify-center p-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 rounded-lg transition-colors border border-transparent hover:border-red-100 dark:hover:border-red-800 min-w-[40px] min-h-[40px]"
               :title="$t('exam.finish_button')"
             >
-              <LogOut class="w-5 h-5 mr-2 hidden lg:block" />
-              <span class="hidden lg:inline">{{ $t('exam.finish_button') }}</span>
-              <LogOut class="w-5 h-5 lg:hidden" />
+              <LogOut class="w-5 h-5" />
             </button>
-          </div>
-
-          <!-- Toggles Layer (Absolute Right) -->
-          <div class="flex items-center space-x-2 absolute right-4 sm:right-8 z-20">
-            <!-- Desktop Toggles (Visible on lg+) -->
-            <div class="hidden lg:flex items-center space-x-2">
-              <LanguageToggle />
-              <ThemeToggle />
+            
+            <!-- DESKTOP TOGGLES (Hidden on Mobile) -->
+            <div class="hidden lg:flex items-center gap-4 ml-4 pl-4 border-l border-slate-200 dark:border-gray-700">
+                 <LanguageToggle />
+                 <ThemeToggle />
             </div>
 
-            <!-- Options Menu (Visible on Mobile/Tablet < lg) -->
+            <!-- More Options Toggle (Mobile Only) -->
             <div class="relative lg:hidden">
               <button 
                 @click="showOptionsMenu = !showOptionsMenu"
-                class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-gray-700 text-slate-600 dark:text-gray-300 transition-colors"
-                title="Options"
+                class="flex items-center justify-center p-2 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-700 rounded-lg transition-colors min-w-[40px] min-h-[40px]"
+                :class="{ 'bg-slate-100 dark:bg-gray-700': showOptionsMenu }"
               >
-                <MoreVertical class="w-6 h-6" />
+                <MoreVertical class="w-5 h-5" />
               </button>
 
-              <!-- Dropdown -->
-              <transition name="slide-fade">
-                <div 
-                  v-if="showOptionsMenu"
-                  class="absolute right-0 top-full mt-2 p-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-slate-100 dark:border-gray-700 flex flex-col items-end gap-2 min-w-[3rem] z-50 origin-top-right"
-                >
-                  <LanguageToggle />
-                  <ThemeToggle />
+              <!-- Dropdown Menu -->
+              <div 
+                v-if="showOptionsMenu"
+                class="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-slate-200 dark:border-gray-700 py-2 z-50 transform origin-top-right transition-all"
+              >
+                <!-- Tools Section -->
+                 <div class="px-2 py-2 grid grid-cols-3 gap-2 border-b border-slate-100 dark:border-gray-700 mb-2">
+                    <button @click="{ toggleMark(); showOptionsMenu = false }" class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700 text-xs gap-1" :class="isCurrentMarked ? 'text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'text-slate-600 dark:text-gray-400'">
+                        <Pin class="w-5 h-5" :class="{ 'fill-current': isCurrentMarked }" />
+                        <span>Mark</span>
+                    </button>
+                     <button @click="{ showCalculator = !showCalculator; showOptionsMenu = false }" class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700 text-xs gap-1" :class="showCalculator ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-slate-600 dark:text-gray-400'">
+                        <CalculatorIcon class="w-5 h-5" />
+                        <span>Calc</span>
+                    </button>
+                     <button @click="{ showNotepad = !showNotepad; showOptionsMenu = false }" class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700 text-xs gap-1" :class="showNotepad ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'text-slate-600 dark:text-gray-400'">
+                        <FileEdit class="w-5 h-5" />
+                        <span>Note</span>
+                    </button>
+                 </div>
+
+                <!-- Global Toggles -->
+                <div class="px-4 py-2 space-y-3">
+                   <div class="flex items-center justify-between">
+                     <span class="text-sm font-medium text-slate-700 dark:text-gray-300">Language</span>
+                     <LanguageToggle />
+                   </div>
+                   <div class="flex items-center justify-between">
+                     <span class="text-sm font-medium text-slate-700 dark:text-gray-300">Theme</span>
+                     <ThemeToggle />
+                   </div>
                 </div>
-              </transition>
+              </div>
+
+              <!-- Click outside overlay for menu -->
+              <div v-if="showOptionsMenu" @click="showOptionsMenu = false" class="fixed inset-0 z-40 bg-transparent w-screen h-screen -top-16 -right-4 cursor-default"></div>
             </div>
-          </div>
         </div>
       </div>
       <!-- Progress Bar -->
-      <div class="h-1 bg-slate-200 dark:bg-gray-700 w-full">
+      <div class="h-1 bg-slate-200 dark:bg-gray-700 w-full relative z-30">
         <div 
           class="h-full bg-blue-600 dark:bg-blue-500 transition-all duration-300 ease-out"
           :style="{ width: `${((store.currentQuestionIndex + 1) / store.totalQuestions) * 100}%` }"
         ></div>
       </div>
+      
     </header>
 
-    <div class="flex flex-1 overflow-hidden pt-[4.25rem]">
+    <div class="flex flex-1 overflow-hidden pt-16 bg-slate-50 dark:bg-gray-900">
       <!-- Sidebar (Desktop) -->
       <!-- Use v-show or conditional class for transition -->
       <aside 
@@ -300,73 +341,21 @@ onUnmounted(() => {
       </div>
 
       <!-- Main Content Area (Includes Scrollable Q & Fixed Footer) -->
-      <div class="flex flex-col flex-1 min-w-0 relative">
-        <main class="flex-1 overflow-y-auto p-0 pb-24 sm:p-8 sm:pb-8">
+      <div class="flex flex-col flex-1 min-w-0 relative h-full">
+        <main class="flex-1 overflow-y-auto p-0 pb-0 sm:p-8 sm:pb-8 bg-slate-50 dark:bg-gray-900">
           <div class="bg-white dark:bg-white sm:bg-transparent sm:dark:bg-transparent min-h-full shadow-none rounded-none p-0 sm:p-8 max-w-5xl mx-auto transition-colors duration-300">
             <QuestionCard 
               :question="store.currentQuestion"
               v-model="currentAnswer"
             />
+            <!-- Spacer for bottom scroll -->
+            <div class="h-24 sm:hidden"></div>
           </div>
         </main>
-
-        <!-- Unified Fixed Footer (All Screens) -->
-        <!-- Fixed on Mobile (< lg), Static on Desktop (lg+) -->
-        <div class="fixed bottom-0 left-0 w-full lg:static lg:w-auto shrink-0 bg-white dark:bg-gray-800 border-t border-slate-200 dark:border-gray-700 z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
-          <!-- CHANGED: sm:px-8 to align with card on Tablet (where Card has padding). lg:px-0 on Desktop. -->
-          <div class="w-full max-w-5xl mx-auto flex justify-between items-center p-4 sm:px-8 lg:px-0">
-            <button 
-              @click="store.prevQuestion"
-              :disabled="store.isFirstQuestion"
-              data-testid="nav-prev"
-              class="flex items-center px-4 py-2 text-slate-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-slate-300 dark:border-gray-600 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronLeft class="w-5 h-5 mr-1" />
-              {{ $t('exam.prev_button') }}
-            </button>
-
-            <!-- Flag Button (Centered) -->
-             <button 
-              @click="toggleMark"
-              class="flex flex-col items-center justify-center p-2 rounded-lg transition-colors group relative"
-              :class="isCurrentMarked 
-                ? 'text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-900/20' 
-                : 'text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-700/50'"
-              :title="$t('exam.mark_for_review') + ' (F)'"
-            >
-              <Pin 
-                class="w-6 h-6 transition-transform group-active:scale-90" 
-                :class="{ 'fill-current': isCurrentMarked }"
-              />
-              <span class="text-[0.6rem] font-bold uppercase tracking-wider mt-0.5">
-                {{ isCurrentMarked ? $t('exam.marked_state') : $t('exam.flag_action') }}
-              </span>
-            </button>
-
-            <button 
-              v-if="!store.isLastQuestion"
-              @click="store.nextQuestion"
-              data-testid="nav-next"
-              class="flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm"
-            >
-              {{ $t('exam.next_button') }}
-              <ChevronRight class="w-5 h-5 ml-1" />
-            </button>
-
-            <button 
-              v-else
-              @click="handleFinish"
-              class="flex items-center px-6 py-2 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white rounded-lg transition-colors shadow-sm font-bold"
-            >
-              <CheckCircle class="w-5 h-5 mr-2" />
-              {{ $t('exam.finish_exam_button') }}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
 
-    <!-- Confirmation Modal -->
+    <!-- CONFIRMATION MODAL -->
     <div v-if="showConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="showConfirmModal = false"></div>
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 sm:p-8 max-w-md sm:max-w-xl w-full relative z-10 transform transition-all scale-100 dark:text-gray-100">
@@ -385,9 +374,38 @@ onUnmounted(() => {
           
           <!-- Status Summary -->
           <div class="bg-slate-50 dark:bg-gray-700/50 rounded-lg p-4 text-center text-sm space-y-2">
-            <p class="text-slate-700 dark:text-gray-300" v-html="$t('exam.confirm_modal.summary', { answered: answeredCount, total: store.totalQuestions })"></p>
-            <p v-if="answeredCount < store.totalQuestions" class="text-slate-600 dark:text-gray-400" v-html="$t('exam.confirm_modal.warning', { remaining: store.totalQuestions - answeredCount })"></p>
-            <p v-if="markedCount > 0" class="text-amber-600 dark:text-amber-400 font-medium pt-2 border-t border-slate-200 dark:border-gray-600" v-html="$t('exam.confirm_modal.marked_warning', { count: markedCount })"></p>
+            <i18n-t keypath="exam.confirm_modal.summary" tag="p" scope="global" class="text-slate-700 dark:text-gray-300">
+              <template #answered>
+                <span class="font-bold">{{ answeredCount }}</span>
+              </template>
+              <template #total>
+                <span class="font-bold">{{ store.totalQuestions }}</span>
+              </template>
+            </i18n-t>
+
+            <i18n-t 
+              v-if="answeredCount < store.totalQuestions" 
+              keypath="exam.confirm_modal.warning" 
+              tag="p" 
+              scope="global"
+              class="text-slate-600 dark:text-gray-400"
+            >
+              <template #remaining>
+                <span class="font-bold text-red-600 dark:text-red-400">{{ store.totalQuestions - answeredCount }}</span>
+              </template>
+            </i18n-t>
+
+            <i18n-t 
+              v-if="markedCount > 0" 
+              keypath="exam.confirm_modal.marked_warning" 
+              tag="p" 
+              scope="global"
+              class="text-amber-600 dark:text-amber-400 font-medium pt-2 border-t border-slate-200 dark:border-gray-600"
+            >
+              <template #count>
+                <span class="font-bold">{{ markedCount }}</span>
+              </template>
+            </i18n-t>
           </div>
         </div>
 
@@ -409,6 +427,22 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
+
+    <!-- TOOL MODALS -->
+    <!-- Calculator -->
+    <Calculator 
+      v-if="showCalculator" 
+      @close="showCalculator = false"
+    />
+
+    <!-- Notepad -->
+    <Notepad 
+      v-if="showNotepad" 
+      @close="showNotepad = false"
+    />
+
+
+
   </div>
 </template>
 

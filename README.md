@@ -20,11 +20,13 @@ Built with **Vue 3**, **Vite**, and **Tailwind CSS**, it features a responsive d
 **Key Features:**
 *   **Bilingual Support:** Full support for **Portuguese (PT)** and **English (EN)**, with instant language switching.
 *   **Realistic Exam Mode:** 40 questions selected randomly based on the official ISTQB® v4.0 distribution matrix.
+*   **Practice Mode:** Untimed mode for stress-free study and revision.
 *   **Performance Analytics:** Detailed breakdown of scores per chapter (e.g., Chapter 1: Fundamentals of Testing).
+*   **PDF Exam Report:** Download a detailed PDF summary of your results, including domain breakdown and improvement areas.
 *   **Instant Feedback:** Explanations for every question to aid learning.
 *   **Mark for Review:** Flag questions during the exam to revisit them before submitting.
 *   **Dark/Light Mode:** Toggle between themes for a comfortable reading experience.
-*   **Responsive Design:** Optimized for desktop (with collapsible sidebar), tablet, and mobile devices.
+*   **Aesthetic & Responsive:** Premium UI design optimized for desktop, tablet, and mobile devices.
 
 ---
 
@@ -52,6 +54,8 @@ Built with **Vue 3**, **Vite**, and **Tailwind CSS**, it features a responsive d
 -   **Build Tool:** Vite 7.2
 -   **Styling:** Tailwind CSS 3.4
 -   **State Management:** Pinia 3.0
+-   **Internationalization:** Vue I18n 11
+-   **PDF Generation:** jsPDF + AutoTable
 -   **Icons:** Lucide Vue
 
 ---
@@ -139,7 +143,9 @@ ISTQB_project/
 ├── src/
 │   ├── components/      # Vue UI components (ExamInterface, ResultsScreen, etc.)
 │   ├── data/            # Question bank (questions_pt.js, questions_en.js)
-│   ├── stores/          # Pinia state stores (exam.js)
+│   ├── locales/         # i18n translation files (en.json, pt.json)
+│   ├── stores/          # Pinia state stores (exam.js, language.js)
+│   ├── utils/           # Utility functions (pdfGenerator.js)
 │   ├── App.vue          # Root component
 │   └── main.js          # Application entry point
 │

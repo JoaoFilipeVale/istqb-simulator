@@ -1,10 +1,34 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import { useExamStore } from '../stores/exam'
-import { CheckCircle, XCircle, RotateCcw, BookOpen, ChevronDown, ChevronUp, Brain, Lightbulb } from 'lucide-vue-next'
+import { generateExamReport } from '../utils/pdfGenerator'
+import { CheckCircle, XCircle, RotateCcw, BookOpen, ChevronDown, ChevronUp, Brain, Lightbulb, FileText } from 'lucide-vue-next'
 import InfoTooltip from './InfoTooltip.vue'
+import { useI18n } from 'vue-i18n'
 
 const store = useExamStore()
+const { t } = useI18n()
+
+// ... (existing code) ...
+
+function handleDownloadReport() {
+  const reportData = {
+    score: store.score,
+    total: store.totalQuestions,
+    passed: store.passed,
+    chapterStats: {}
+  }
+
+  // Use the computed chapterStats value but reframe it as a map for the generator
+  chapterStats.value.forEach(stat => {
+      reportData.chapterStats[stat.number] = {
+          correct: stat.correct,
+          total: stat.total
+      }
+  })
+
+  generateExamReport(reportData, t)
+}
 
 const percentage = computed(() => Math.round((store.score / store.totalQuestions) * 100))
 
@@ -36,8 +60,7 @@ function isCorrect(question) {
 // Using i18n global instance would be ideal if outside setup, but here we can just key off the number
 // AND we are inside script setup, so we can use composer? Actually `getChapterName` is used in computed.
 // Let's rely on the template to translate OR use useI18n inside script.
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
+
 
 function getChapterName(num) {
   // Use the 'chapters' key from our i18n files
@@ -213,6 +236,8 @@ function getCorrectAnswerText(question) {
   const opt = question.options.find(o => o.id === ans)
   return opt ? `${ans.toUpperCase()}) ${opt.text}` : ans
 }
+
+
 </script>
 
 <template>
@@ -232,19 +257,42 @@ function getCorrectAnswerText(question) {
             {{ store.passed ? t('results.passed') : t('results.failed') }}
           </h2>
           <div class="mb-6 text-center">
-            <span class="text-slate-600 dark:text-gray-300 text-lg" data-testid="score-summary" v-html="t('results.score_summary', { answered: answeredCount, total: store.totalQuestions, score: store.score, percentage: percentage })">
-            </span>
+            <i18n-t keypath="results.score_summary" tag="span" scope="global" class="text-slate-600 dark:text-gray-300 text-lg" data-testid="score-summary">
+              <template #answered>
+                <span class="font-bold">{{ answeredCount }}</span>
+              </template>
+              <template #total>
+                <span class="font-bold">{{ store.totalQuestions }}</span>
+              </template>
+              <template #score>
+                <span class="font-bold">{{ store.score }}</span>
+              </template>
+              <template #percentage>
+                {{ percentage }}
+              </template>
+            </i18n-t>
             <InfoTooltip :text="t('tooltips.scoring')" />
           </div>
           
-          <button 
-            @click="store.resetExam"
-            data-testid="restart-btn"
-            class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors shadow-md"
-          >
-            <RotateCcw class="w-5 h-5 mr-2" />
-            {{ t('results.restart_button') }}
-          </button>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+             <button 
+                @click="handleDownloadReport"
+                data-testid="download-report-btn"
+                class="inline-flex items-center px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-lg transition-colors shadow-md"
+              >
+                <FileText class="w-5 h-5 mr-2" />
+                {{ t('results_pdf.download_button', 'Download Report') }}
+              </button>
+
+             <button 
+                @click="store.resetExam"
+                data-testid="restart-btn"
+                class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors shadow-md"
+              >
+                <RotateCcw class="w-5 h-5 mr-2" />
+                {{ t('results.restart_button') }}
+              </button>
+          </div>
         </div>
       </div>
 

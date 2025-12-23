@@ -14,6 +14,8 @@ export const useExamStore = defineStore('exam', () => {
     const timeLeft = ref(3600)
     const isTimed = ref(true)
     const shuffledQuestions = ref([])
+    const notepadContent = ref('') // Global notepad content for session
+    const questionComments = ref({}) // Map of questionId -> comment string
     let timerInterval = null
 
     // --- Computed Source ---
@@ -217,12 +219,22 @@ export const useExamStore = defineStore('exam', () => {
         }
     }
 
+    function setNotepadContent(content) {
+        notepadContent.value = content
+    }
+
+    function setQuestionComment(questionId, comment) {
+        questionComments.value[questionId] = comment
+    }
+
     function resetExam() {
         stopTimer()
         status.value = 'welcome'
         currentQuestionIndex.value = 0
         userAnswers.value = {}
         markedQuestions.value = {}
+        notepadContent.value = ''
+        questionComments.value = {}
         timeLeft.value = 3600
     }
 
@@ -248,6 +260,10 @@ export const useExamStore = defineStore('exam', () => {
         swapLanguage, // Export this so we can watch locale changes
         isTimed,
         markedQuestions,
-        toggleMarkQuestion
+        toggleMarkQuestion,
+        notepadContent,
+        questionComments,
+        setNotepadContent,
+        setQuestionComment
     }
 })

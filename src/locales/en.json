@@ -8,8 +8,34 @@
         "instruction_3": "The passing grade is <span class=\"font-bold\">65%</span> (26 correct answers).",
         "instruction_4": "You may navigate freely, <span class=\"font-bold\">flag questions</span> for review, and change your answers before submitting.",
         "instruction_5": "<span class=\"font-bold\">Authentic Simulation:</span> Questions adhere to the official ISTQB structure and distribution.",
+        "instructor_5": "<span class=\"font-bold\">Authentic Simulation:</span> Questions adhere to the official ISTQB structure and distribution.",
+        "conditions": {
+            "intro": "The exam conditions below apply to a real exam. Only exam duration and pass mark apply to a mock exam.",
+            "title": "Examination Conditions",
+            "format_title": "Exam format",
+            "format_1": "This exam consists of 40 multiple-choice questions.",
+            "format_2": "Each correctly answered question results in 1 point, 40 points can be achieved at maximum.",
+            "format_3": "Duration of the exam is 60 minutes.",
+            "format_4": "To pass the exam, 65% must be achieved.",
+            "forbidden_intro": "During the exam, it is STRICTLY FORBIDDEN TO:",
+            "forbidden_1": "Take screenshots",
+            "forbidden_1_suffix": "of exam contents.",
+            "forbidden_2": "Copy and spread exam",
+            "forbidden_2_suffix": "contents or other confidential exam information.",
+            "forbidden_3": "Use extra devices or unauthorized",
+            "forbidden_3_suffix": "materials.",
+            "forbidden_4": "Talk",
+            "forbidden_4_suffix": "during the exam.",
+            "forbidden_5": "Have third person",
+            "forbidden_5_suffix": "next to you.",
+            "violation": "Violation of any of the rules above can lead to stopping of your exam and voiding of your exam results.",
+            "agreement_title": "Agreement",
+            "agreement_1": "By starting the exam, the participant agrees not to copy and/or spread any contents of this exam.",
+            "agreement_2": "By starting the exam, the participant agrees that he/she has read the conditions, understands them and agrees with them."
+        },
         "start_button": "Exam with time",
-        "start_untimed": "Exam without time",
+        "start_button_official": "Start examination",
+        "start_untimed": "Practice (no time)",
         "footer": {
             "developed_by": "Developed by João Vale",
             "opensource_link": "Open Source Project for educational purposes",
@@ -30,20 +56,22 @@
         "confirm_modal": {
             "title": "Finish exam?",
             "message": "Are you sure you want to submit the exam now? Time is not up yet. Once submitted, you cannot change your answers.",
-            "summary": "You have answered <span class=\"font-bold\">{answered}</span> out of <span class=\"font-bold\">{total}</span> questions.",
-            "warning": "You still have <span class=\"font-bold text-red-600 dark:text-red-400\">{remaining}</span> unanswered questions.",
+            "summary": "You have answered {answered} out of {total} questions.",
+            "warning": "You still have {remaining} unanswered questions.",
             "cancel": "Cancel",
             "confirm": "Finish and Submit",
-            "marked_warning": "You have <span class=\"font-bold text-amber-600 dark:text-amber-400\">{count}</span> questions flagged for review."
+            "marked_warning": "You have {count} questions flagged for review."
         },
         "mark_for_review": "Flag for review",
         "flag_action": "Flag",
-        "marked_state": "Marked"
+        "marked_state": "Marked",
+        "close_sidebar": "Close sidebar",
+        "open_sidebar": "Open sidebar"
     },
     "results": {
         "passed": "PASSED",
         "failed": "FAILED",
-        "score_summary": "You answered <span class=\"font-bold\">{answered}</span> out of <span class=\"font-bold\">{total}</span> questions and got <span class=\"font-bold\">{score}</span> correct ({percentage}%)",
+        "score_summary": "You answered {answered} out of {total} questions and got {score} correct ({percentage}%)",
         "question_number": "Question {number}",
         "restart_button": "Retake exam",
         "chapter_analysis_title": "Chapter analysis",
@@ -61,7 +89,7 @@
         "k2_desc": "K2: Understand",
         "k3_desc": "K3: Apply",
         "questions": "questions",
-        "recommendations_title": "Study rcommendations",
+        "recommendations_title": "Study recommendations",
         "recommendations_desc": "Based on performance below passing (65%), we suggest reviewing the following chapters:",
         "review_chapter": "Review Chapter {number}"
     },
@@ -78,5 +106,32 @@
         "lo": "LO codes (e.g. FL-4.2.1) correspond to specific sections of the Syllabus v4.0. You can use them to quickly find the subject in the official manual.",
         "scoring": "The official CTFL v4.0 exam consists of 40 questions. To obtain certification, you need to score at least 65% (26 out of 40 questions).",
         "multiple_choice": "Note: For these questions, you must select all correct options. No partial credit is given; either the answer is fully correct or it will be considered wrong."
+    },
+    "calculator": {
+        "title": "Calculator"
+    },
+    "notepad": {
+        "title": "Notepad",
+        "placeholder": "Type your notes here...",
+        "auto_saved": "Notes are auto-saved for this session"
+    },
+    "results_pdf": {
+        "download_button": "Download report (PDF)",
+        "report_title": "Exam result report",
+        "candidate": "Candidate",
+        "date": "Date",
+        "score": "Score",
+        "result": "Result",
+        "domain_breakdown": "Domain breakdown",
+        "topic": "Topic",
+        "max_points": "Max. points",
+        "percent": "Percent",
+        "app_name": "Exam ISTQB simulator",
+        "anonymous_candidate": "Anonymous candidate",
+        "passed": "PASSED",
+        "failed": "FAILED",
+        "total": "Total",
+        "page_x_of_y": "Page {current} of {total}",
+        "generated_by": "Generated by Exam ISTQB simulator on"
     }
 }
