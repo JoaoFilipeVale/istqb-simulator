@@ -24,6 +24,8 @@ const emit = defineEmits(['update:modelValue'])
 const isMultiple = computed(() => props.question.type === 'multiple')
 const isMarked = computed(() => !!store.markedQuestions[props.question.id])
 
+
+
 // Handle option selection
 // - Multiple choice: Toggles option in array
 // - Single choice: Sets value directly
@@ -65,7 +67,15 @@ function isSelected(optionId) {
     </div>
 
     <div class="mb-6 mr-8">
-      <h3 class="text-lg font-medium text-slate-900 leading-relaxed" v-html="question.text" data-testid="question-text"></h3>
+      <h3 class="text-lg font-medium text-slate-900 leading-relaxed whitespace-pre-line" v-html="question.text" data-testid="question-text"></h3>
+      
+      <!-- Visual Aids -->
+      <div v-if="question.diagramImage" class="my-4 flex justify-center">
+        <img :src="question.diagramImage" alt="Question Diagram" class="max-w-full h-auto rounded-lg border border-slate-200 shadow-sm" />
+      </div>
+
+      <div v-if="question.tableHtml" class="my-4 overflow-x-auto" v-html="question.tableHtml"></div>
+
       <p v-if="isMultiple" class="text-sm text-blue-600 font-medium mt-2 bg-blue-50 px-3 py-1 rounded-full flex items-center gap-2">
         {{ $t('exam.select_two') }}
         <InfoTooltip :text="t('tooltips.multiple_choice')" />

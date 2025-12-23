@@ -45,6 +45,8 @@ const formattedTime = computed(() => {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 })
 
+const isLowTime = computed(() => store.timeLeft <= 600) // 10 minutes warning (`<=` to include exactly 10:00 or jump on 09:59? user said 10 mins or less. 600 is fine.)
+
 // Count answered questions
 const answeredCount = computed(() => {
   return Object.values(store.userAnswers).filter(ans => ans !== undefined && ans !== null && (Array.isArray(ans) ? ans.length > 0 : true)).length
@@ -164,7 +166,14 @@ onUnmounted(() => {
           <!-- CHANGED: sm:pr-16 (was 24) to bring buttons closer to Options on Tablet. -->
           <div class="w-full max-w-5xl mx-auto flex justify-end items-center space-x-2 sm:space-x-3 pr-10 sm:pr-16 lg:px-0 transition-all">
             <!-- Timer -->
-            <div v-if="store.isTimed" class="flex items-center space-x-2 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 sm:px-4 py-2 rounded-full" data-testid="exam-timer">
+            <div 
+              v-if="store.isTimed" 
+              class="flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-full transition-colors duration-500"
+              :class="isLowTime 
+                ? 'text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-900/30 animate-pulse' 
+                : 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30'"
+              data-testid="exam-timer"
+            >
               <Clock class="w-5 h-5" />
               <span class="font-mono font-bold text-lg leading-none">{{ formattedTime }}</span>
             </div>

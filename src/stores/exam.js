@@ -124,7 +124,7 @@ export const useExamStore = defineStore('exam', () => {
             logDistribution[chapter] = selected.length
         })
 
-        console.log("Distribuição do Exame Gerado:", logDistribution)
+
 
         // Baralhar o exame final para a ordem das questões não ser sequencial por capítulo
         return shuffle(selectedQuestions)

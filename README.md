@@ -138,7 +138,7 @@ ISTQB_project/
 ├── public/              # Static assets (favicon, etc.)
 ├── src/
 │   ├── components/      # Vue UI components (ExamInterface, ResultsScreen, etc.)
-│   ├── data/            # Question bank (questions.js)
+│   ├── data/            # Question bank (questions_pt.js, questions_en.js)
 │   ├── stores/          # Pinia state stores (exam.js)
 │   ├── App.vue          # Root component
 │   └── main.js          # Application entry point
