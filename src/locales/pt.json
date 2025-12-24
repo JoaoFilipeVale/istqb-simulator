@@ -65,7 +65,15 @@
         "flag_action": "Marcar",
         "marked_state": "Marcada",
         "close_sidebar": "Fechar barra lateral",
-        "open_sidebar": "Abrir barra lateral"
+        "open_sidebar": "Abrir barra lateral",
+        "toolbar": {
+            "prev": "Ant.",
+            "next": "Seg.",
+            "flag": "Marcar",
+            "calc": "Calc",
+            "notes": "Notas",
+            "finish": "Fim"
+        }
     },
     "results": {
         "passed": "APROVADO",

@@ -25,29 +25,17 @@ const showNotepad = ref(false)
 
 
 // Sidebar State
-// Default to open on large screens, closed on small
-const isSidebarOpen = ref(typeof window !== 'undefined' && window.innerWidth >= 1024)
+// Default to closed on all screens
+const isSidebarOpen = ref(false)
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
 
 /**
- * Handles window resize events to auto-adjust sidebar visibility.
- * - Opens sidebar when moving to Desktop (>=1024px).
- * - Closes sidebar when moving to Mobile (<1024px) to prevent overlay.
+ * Handles window resize events.
+ * Removed auto-open logic as per request. Sidebar/Navigation allows manual toggle.
  */
 const handleResize = () => {
   if (typeof window === 'undefined') return
-  
-  const newWidth = window.innerWidth
-  const oldWidth = windowWidth.value
-  
-  windowWidth.value = newWidth
-
-  // Auto-adjust sidebar when crossing the lg (1024px) breakpoint
-  if (oldWidth < 1024 && newWidth >= 1024) {
-    isSidebarOpen.value = true
-  } else if (oldWidth >= 1024 && newWidth < 1024) {
-    isSidebarOpen.value = false
-  }
+  windowWidth.value = window.innerWidth
 }
 
 
@@ -162,27 +150,65 @@ onUnmounted(() => {
                <span class="opacity-75">{{ store.totalQuestions }}</span>
             </div>
 
-            <!-- Navigation -->
-            <div class="flex items-center space-x-1 shrink-0">
-                <button @click="store.prevQuestion" :disabled="store.isFirstQuestion" class="toolbar-btn p-2 flex items-center justify-center min-w-[40px] min-h-[40px]" :title="$t('exam.prev_button')">
+            <!-- Mobile Navigation (Visible only on < lg) -->
+            <div class="flex items-center gap-1 ml-2 lg:hidden">
+                <button @click="store.prevQuestion" :disabled="store.isFirstQuestion" class="p-1 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent" :title="$t('exam.prev_button')">
                     <ChevronLeft class="w-6 h-6" />
                 </button>
-                <button @click="store.nextQuestion" :disabled="!store.userAnswers[store.currentQuestion?.id] && !store.shuffledQuestions[store.currentQuestionIndex+1]" class="toolbar-btn p-2 flex items-center justify-center min-w-[40px] min-h-[40px]" :title="$t('exam.next_button')">
+                <button @click="store.nextQuestion" :disabled="!store.userAnswers[store.currentQuestion?.id] && !store.shuffledQuestions[store.currentQuestionIndex+1]" class="p-1 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent" :title="$t('exam.next_button')">
                     <ChevronRight class="w-6 h-6" />
                 </button>
             </div>
-            
-             <!-- DESKTOP TOOLS (Hidden on Mobile) -->
-            <div class="hidden lg:flex items-center gap-4 ml-4 pl-4 border-l border-slate-200 dark:border-gray-700">
-                <button @click="toggleMark" class="toolbar-tool-btn p-2 flex items-center justify-center min-w-[40px] min-h-[40px] rounded-lg transition-colors" :class="isCurrentMarked ? 'text-amber-600 dark:text-amber-500 bg-amber-100 dark:bg-amber-900/30' : 'text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700'" :title="$t('exam.mark_for_review')">
+
+            <!-- MAIN TOOLBAR (Desktop) -->
+            <div class="hidden lg:flex items-center gap-2 ml-4">
+                
+                <!-- Previous -->
+                <button @click="store.prevQuestion" :disabled="store.isFirstQuestion" class="flex flex-col items-center justify-center p-2 rounded-lg text-xs gap-1 min-w-[60px]" :class="store.isFirstQuestion ? 'text-slate-300 dark:text-gray-600' : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-gray-700 hover:text-cyan-600 dark:hover:text-cyan-400'" :title="$t('exam.prev_button')">
+                    <ChevronLeft class="w-5 h-5" />
+                    <span>{{ $t('exam.toolbar.prev') }}</span>
+                </button>
+
+                <!-- Next -->
+                <button @click="store.nextQuestion" :disabled="!store.userAnswers[store.currentQuestion?.id] && !store.shuffledQuestions[store.currentQuestionIndex+1]" class="flex flex-col items-center justify-center p-2 rounded-lg text-xs gap-1 min-w-[60px]" :class="(!store.userAnswers[store.currentQuestion?.id] && !store.shuffledQuestions[store.currentQuestionIndex+1]) ? 'text-slate-300 dark:text-gray-600' : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-gray-700 hover:text-cyan-600 dark:hover:text-cyan-400'" :title="$t('exam.next_button')">
+                    <ChevronRight class="w-5 h-5" />
+                    <span>{{ $t('exam.toolbar.next') }}</span>
+                </button>
+
+                <div class="w-px h-8 bg-slate-200 dark:bg-gray-700 mx-1"></div>
+
+                <!-- Mark -->
+                <button @click="toggleMark" class="flex flex-col items-center justify-center p-2 rounded-lg text-xs gap-1 min-w-[60px]" :class="isCurrentMarked ? 'text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-gray-700 hover:text-cyan-600 dark:hover:text-cyan-400'" :title="$t('exam.mark_for_review')">
                     <Pin class="w-5 h-5" :class="{ 'fill-current': isCurrentMarked }" />
+                    <span>{{ $t('exam.toolbar.flag') }}</span>
                 </button>
-                <button @click="showCalculator = !showCalculator" class="toolbar-tool-btn p-2 flex items-center justify-center min-w-[40px] min-h-[40px] rounded-lg transition-colors" :class="showCalculator ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700'" :title="$t('calculator.title')">
+
+                <div class="w-px h-8 bg-slate-200 dark:bg-gray-700 mx-1"></div>
+
+                <!-- Calculator -->
+                <button @click="showCalculator = !showCalculator" class="flex flex-col items-center justify-center p-2 rounded-lg text-xs gap-1 min-w-[60px]" :class="showCalculator ? 'text-cyan-600 bg-cyan-50 dark:bg-cyan-900/20' : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-gray-700 hover:text-cyan-600 dark:hover:text-cyan-400'" :title="$t('calculator.title')">
                     <CalculatorIcon class="w-5 h-5" />
+                    <span>{{ $t('exam.toolbar.calc') }}</span>
                 </button>
-                <button @click="showNotepad = !showNotepad" class="toolbar-tool-btn p-2 flex items-center justify-center min-w-[40px] min-h-[40px] rounded-lg transition-colors" :class="showNotepad ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700'" :title="$t('notepad.title')">
+
+                <!-- Notepad -->
+                <button @click="showNotepad = !showNotepad" class="flex flex-col items-center justify-center p-2 rounded-lg text-xs gap-1 min-w-[60px]" :class="showNotepad ? 'text-cyan-600 bg-cyan-50 dark:bg-cyan-900/20' : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-gray-700 hover:text-cyan-600 dark:hover:text-cyan-400'" :title="$t('notepad.title')">
                     <FileEdit class="w-5 h-5" />
+                    <span>{{ $t('exam.toolbar.notes') }}</span>
                 </button>
+
+                <div class="w-px h-8 bg-slate-200 dark:bg-gray-700 mx-1"></div>
+
+                 <!-- Finish Button (Global Header Version) -->
+                <button 
+                  @click="handleFinish"
+                  class="flex flex-col items-center justify-center p-2 text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-gray-700 hover:text-cyan-600 dark:hover:text-cyan-400 rounded-lg transition-colors min-w-[60px] text-xs gap-1"
+                  :title="$t('exam.finish_button')"
+                >
+                  <LogOut class="w-5 h-5" />
+                  <span>{{ $t('exam.toolbar.finish') }}</span>
+                </button>
+
             </div>
         </div>
 
@@ -199,14 +225,7 @@ onUnmounted(() => {
               <span class="font-mono font-bold text-sm sm:text-base">{{ formattedTime }}</span>
             </div>
 
-            <!-- Finish (Icon Only) -->
-            <button 
-              @click="handleFinish"
-              class="flex items-center justify-center p-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 rounded-lg transition-colors border border-transparent hover:border-red-100 dark:hover:border-red-800 min-w-[40px] min-h-[40px]"
-              :title="$t('exam.finish_button')"
-            >
-              <LogOut class="w-5 h-5" />
-            </button>
+
             
             <!-- DESKTOP TOGGLES (Hidden on Mobile) -->
             <div class="hidden lg:flex items-center gap-4 ml-4 pl-4 border-l border-slate-200 dark:border-gray-700">
@@ -256,6 +275,17 @@ onUnmounted(() => {
                      <ThemeToggle />
                    </div>
                 </div>
+
+                <!-- Mobile Finish Button -->
+                <div class="p-2 border-t border-slate-100 dark:border-gray-700 mt-1">
+                    <button 
+                      @click="{ handleFinish(); showOptionsMenu = false }"
+                      class="w-full flex items-center justify-center space-x-2 p-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                    >
+                      <LogOut class="w-4 h-4" />
+                      <span class="text-sm font-bold">{{ $t('exam.finish_button') }}</span>
+                    </button>
+                </div>
               </div>
 
               <!-- Click outside overlay for menu -->
@@ -274,32 +304,32 @@ onUnmounted(() => {
     </header>
 
     <div class="flex flex-1 overflow-hidden pt-16 bg-slate-50 dark:bg-gray-900">
+
       <!-- Sidebar (Desktop) -->
       <!-- Use v-show or conditional class for transition -->
       <aside 
-        class="hidden lg:block bg-white dark:bg-gray-800 border-r border-slate-200 dark:border-gray-700 overflow-y-auto overflow-x-hidden transition-all duration-300"
-        :class="isSidebarOpen ? 'w-96' : 'w-0 border-none overflow-hidden'"
+        class="hidden lg:block bg-white dark:bg-gray-800 border-r border-slate-200 dark:border-gray-700 overflow-hidden transition-all duration-300"
+        :class="isSidebarOpen ? 'w-16' : 'w-0 border-none'"
       >
-        <div class="p-6 w-96"> <!-- Fixed width inner container to prevent squashing -->
-          <h3 class="text-sm font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-4">{{ $t('exam.sidebar_title') }}</h3>
-          <div class="grid grid-cols-5 gap-2" data-testid="question-nav-grid">
+        <div class="h-full w-16 flex flex-col items-center py-2"> <!-- Fixed width inner container -->
+          <div class="flex flex-col items-center w-full px-1 h-full gap-[2px]" data-testid="question-nav-grid">
             <button
               v-for="(q, index) in store.shuffledQuestions"
               :key="q.id"
               @click="store.jumpToQuestion(index)"
-              class="w-10 h-10 rounded-lg text-sm font-medium transition-colors flex items-center justify-center relative"
+              class="w-full flex-1 min-h-0 rounded text-[10px] font-medium transition-colors flex items-center justify-center relative shrink-0"
               :class="[
                 store.currentQuestionIndex === index 
-                  ? 'bg-blue-600 text-white ring-2 ring-blue-300 dark:ring-blue-700 ring-offset-2 dark:ring-offset-gray-800' 
+                  ? 'bg-blue-600 text-white z-10' 
                   : isAnswered(index)
-                    ? 'bg-slate-200 dark:bg-gray-700 text-slate-700 dark:text-gray-200 hover:bg-slate-300 dark:hover:bg-gray-600'
-                    : 'bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-600 text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-gray-700'
+                    ? 'bg-slate-100 dark:bg-gray-700 text-slate-600 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-gray-600'
+                    : 'bg-transparent text-slate-400 dark:text-gray-500 hover:bg-slate-50 dark:hover:bg-gray-800'
               ]"
             >
               {{ index + 1 }}
               <span 
                 v-if="store.markedQuestions[q.id]" 
-                class="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 border-2 border-white dark:border-gray-800 rounded-full z-10"
+                class="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full z-20"
               ></span>
             </button>
           </div>
@@ -343,7 +373,7 @@ onUnmounted(() => {
       <!-- Main Content Area (Includes Scrollable Q & Fixed Footer) -->
       <div class="flex flex-col flex-1 min-w-0 relative h-full">
         <main class="flex-1 overflow-y-auto p-0 pb-0 sm:p-8 sm:pb-8 bg-slate-50 dark:bg-gray-900">
-          <div class="bg-white dark:bg-white sm:bg-transparent sm:dark:bg-transparent min-h-full shadow-none rounded-none p-0 sm:p-8 max-w-5xl mx-auto transition-colors duration-300">
+          <div class="bg-white dark:bg-white sm:bg-transparent sm:dark:bg-transparent min-h-full shadow-none rounded-none p-0 sm:p-8 w-full mx-auto transition-colors duration-300">
             <QuestionCard 
               :question="store.currentQuestion"
               v-model="currentAnswer"
